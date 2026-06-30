@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="110" fill="#7d2442"/>
+  <circle cx="256" cy="198" r="110" fill="#fff0d5"/>
+  <path d="M160 330c56-58 136-58 192 0v70H160z" fill="#f0a7b7"/>
+  <path d="M178 190c34-44 88-58 150-42" fill="none" stroke="#231f20" stroke-width="22" stroke-linecap="round"/>
+  <text x="256" y="455" text-anchor="middle" font-family="Arial, sans-serif" font-size="58" font-weight="800" fill="#fff0d5">SF</text>
+</svg>

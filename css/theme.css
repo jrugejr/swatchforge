@@ -1,0 +1,11 @@
+.hero {
+  background:
+    linear-gradient(135deg, rgba(125,36,66,0.96), rgba(77,20,39,0.96)),
+    radial-gradient(circle at 85% 20%, rgba(255,255,255,0.16), transparent 30%);
+  color: white;
+  border: 0;
+}
+.hero p, .hero .muted { color: rgba(255,255,255,0.82); }
+.hero .button { background: #fff0d5; color: var(--brand-dark); }
+.hero .ghost { background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.25); }
+.notice { background: #f5fffd; border-color: #c6ebe6; }

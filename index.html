@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#7d2442" />
+  <!-- GitHub Pages preview build: no manifest or service worker, so it behaves like a normal webpage. -->
+  <title>SwatchForge</title>
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/layout.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/theme.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="icon-button" id="backButton" title="Back" aria-label="Back">←</button>
+      <div>
+        <h1>SwatchForge</h1>
+        <p class="tagline">Track the stash. Build the look. Defeat the dupe goblin.</p>
+      </div>
+      <button class="icon-button" id="helpButton" title="Help" aria-label="Help">?</button>
+    </header>
+
+    <nav class="tabbar" aria-label="Main navigation">
+      <button data-route="home" class="tab active">Home</button>
+      <button data-route="items" class="tab">Items</button>
+      <button data-route="looks" class="tab">Looks</button>
+      <button data-route="dupes" class="tab">Dupes</button>
+      <button data-route="settings" class="tab">Settings</button>
+    </nav>
+
+    <main id="app" class="screen" tabindex="-1"></main>
+  </div>
+
+  <dialog id="helpDialog" class="help-dialog">
+    <button class="dialog-close" id="closeHelp" aria-label="Close help">×</button>
+    <h2>SwatchForge Help</h2>
+    <section id="helpContent"></section>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
