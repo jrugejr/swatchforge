@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1.0 — First Pour
+## v0.1.1 — First Pour
 
 Initial full-skeleton release.
 
@@ -24,9 +24,26 @@ Initial full-skeleton release.
 - Demo data.
 
 
-## v0.1.0-github-preview
+## v0.1.1-github-preview
 
 - Removed installable PWA manifest reference for normal GitHub Pages testing.
 - Removed active service worker registration and added unregister cleanup for stale preview caches.
 - Added `.nojekyll` for GitHub Pages static hosting.
 - Added GitHub Pages upload notes to README.
+
+
+## v0.1.1 — Save Patch
+
+- Added automatic image compression for uploaded photos.
+- Added visible save error alerts.
+- Added fallback behavior so item records can still save if photo storage fills up.
+- Hardened ID generation for more browsers.
+
+
+## v0.1.2 — Daykeeper Theme Preview
+
+- Added a softer Daykeeper-inspired visual theme.
+- Updated colors to a blush/lavender/soft aqua palette.
+- Added emoji labels to top-level navigation and screen headings.
+- Kept the GitHub Pages preview/static behavior intact.
+- Kept the save/photo compression patch intact.

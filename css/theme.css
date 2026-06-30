@@ -1,11 +1,20 @@
+
 .hero {
   background:
-    linear-gradient(135deg, rgba(125,36,66,0.96), rgba(77,20,39,0.96)),
-    radial-gradient(circle at 85% 20%, rgba(255,255,255,0.16), transparent 30%);
+    radial-gradient(circle at 88% 18%, rgba(255,255,255,0.28), transparent 24%),
+    linear-gradient(135deg, rgba(212,125,170,0.98), rgba(145,191,214,0.95));
   color: white;
   border: 0;
 }
-.hero p, .hero .muted { color: rgba(255,255,255,0.82); }
-.hero .button { background: #fff0d5; color: var(--brand-dark); }
-.hero .ghost { background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.25); }
-.notice { background: #f5fffd; border-color: #c6ebe6; }
+.hero p, .hero .muted { color: rgba(255,255,255,0.88); }
+.hero .button { background: #fff5fb; color: var(--brand-dark); }
+.hero .ghost { background: rgba(255,255,255,0.16); color: white; border-color: rgba(255,255,255,0.28); }
+.notice { background: linear-gradient(180deg, #fffefd, #fef7fb); border-color: #ecd5e3; }
+.topbar h1 {
+  background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.tabbar .tab { white-space: nowrap; }
+.card h2 { color: var(--brand-dark); }

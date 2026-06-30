@@ -17,7 +17,9 @@ export function persist() {
 }
 
 export function uid(prefix) {
-  if (crypto?.randomUUID) return `${prefix}_${crypto.randomUUID().slice(0, 8)}`;
+  if (globalThis.crypto && typeof globalThis.crypto.randomUUID === 'function') {
+    return `${prefix}_${globalThis.crypto.randomUUID().slice(0, 8)}`;
+  }
   return `${prefix}_${Date.now()}_${Math.floor(Math.random() * 99999)}`;
 }
 

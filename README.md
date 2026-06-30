@@ -1,4 +1,4 @@
-# SwatchForge v0.1.0 — First Pour
+# SwatchForge v0.1.2 — Daykeeper Theme Preview
 
 A local-first static GitHub Pages preview for tracking nail-art items, avoiding duplicate buys, watching low-stock supplies, and turning inspo into reusable nail-look recipes.
 
@@ -90,3 +90,19 @@ This version is meant to run as a normal static GitHub Pages site, not as an ins
 - Data is still saved locally in the browser using the current device/browser storage.
 - Use **Settings → Export Backup** before clearing browser data or switching devices.
 - For quick testing, open the GitHub Pages link on her phone and add it to the home screen manually only if desired; it will still act like a regular website.
+
+
+## v0.1.1 save patch
+
+This build compresses uploaded item/look photos before saving and shows visible save errors instead of failing silently. If browser storage fills up, item entries are preserved without the new photos.
+
+
+## v0.1.2 Daykeeper-style theme pass
+
+This preview adds a softer Daykeeper-inspired visual theme for wife beta testing:
+
+- warmer pastel + blush/lavender palette
+- friendlier topbar and card styling
+- emoji navigation labels
+- cozier notebook-like look and feel
+- same GitHub Pages static setup and save patch behavior

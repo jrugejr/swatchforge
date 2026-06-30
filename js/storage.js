@@ -23,7 +23,15 @@ export function loadData() {
 }
 
 export function saveData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch (error) {
+    const isQuota = error && (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED');
+    if (isQuota) {
+      throw new Error('Storage is full. Try smaller photos, remove a few photos, or export a backup before adding more.');
+    }
+    throw error;
+  }
 }
 
 export function resetData() {

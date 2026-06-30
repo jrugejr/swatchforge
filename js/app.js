@@ -59,27 +59,27 @@ function renderHome() {
   const readyLooks = state.data.looks.filter(look => evaluateLook(state.data, look.id).ready).length;
   return `
     <section class="card hero">
-      <h2>First Pour</h2>
-      <p>Full-skeleton build: items, stash tracking, low-stock alerts, dupe checking, look recipes, requirement help, and local backup are all wired into the first version.</p>
+      <h2>Daykeeper Theme Preview</h2>
+      <p>A softer Daykeeper-style skin with cozy cards, lighter colors, and a prettier little notebook vibe — while keeping all the stash, look, and backup logic intact.</p>
       <div class="actions">
-        <button class="button" data-route="add-item">Add Item</button>
-        <button class="ghost" data-route="add-look">Create Look</button>
+        <button class="button" data-route="add-item">💅 Add Item</button>
+        <button class="ghost" data-route="add-look">✨ Create Look</button>
       </div>
     </section>
     <section class="grid auto" style="margin-top:1rem">
-      ${statCard(itemCount, 'Items in stash', 'items')}
-      ${statCard(lowCount, 'Low / restock items', 'items', 'Low')}
-      ${statCard(wishlistCount, 'Wishlist items', 'items', 'Wishlist')}
-      ${statCard(readyLooks, 'Looks ready to make', 'looks')}
+      ${statCard(itemCount, '💅 Items in stash', 'items')}
+      ${statCard(lowCount, '🛒 Low / restock items', 'items', 'Low')}
+      ${statCard(wishlistCount, '💖 Wishlist items', 'items', 'Wishlist')}
+      ${statCard(readyLooks, '🪄 Looks ready to make', 'looks')}
     </section>
     <section class="grid two" style="margin-top:1rem">
       <article class="card">
-        <h2>The Item Model Is Live</h2>
+        <h2>💅 The Item Model Is Live</h2>
         <p>Polish, top coat, base coat, powder, tools, charms, stickers, decorations — all tracked as <strong>items</strong>. Polish is just one type, like a civilized little lacquer citizen.</p>
-        <div class="actions"><button class="ghost" data-route="items">Open Items</button></div>
+        <div class="actions"><button class="ghost" data-route="items">Open My Stash</button></div>
       </article>
       <article class="card notice">
-        <h2>Requirement Help Built In</h2>
+        <h2>🫶 Requirement Help Built In</h2>
         <p>Requirement types are available in the global help and inside look/tutorial screens, so they can pick “Exact Required,” “Similar Allowed,” “Optional,” and the rest without guessing.</p>
         <div class="actions"><button class="ghost" id="inlineHelpButton">Show Help</button></div>
       </article>
@@ -94,8 +94,8 @@ function renderItems() {
   const items = filterItems(state.data.items, state.filters);
   return `
     <section class="split">
-      <div><h2>My Items</h2><p class="muted">Track every polish, tool, powder, charm, sticker, and top coat in the stash.</p></div>
-      <button class="button" data-route="add-item">Add Item</button>
+      <div><h2>💅 My Stash</h2><p class="muted">Track every polish, tool, powder, charm, sticker, and top coat in one pretty little stash.</p></div>
+      <button class="button" data-route="add-item">💅 Add Item</button>
     </section>
     ${helpPanel('What counts as an item?', `<p>An item is anything used to create a look: polish, base coat, top coat, gel, chrome powder, nail art brush, magnet wand, rhinestones, stickers, decals, charms, or supplies.</p>`, showHelp())}
     <section class="card filterbar">
@@ -130,7 +130,7 @@ function renderItemDetail() {
         <h3>Notes</h3><p>${escapeHtml(item.notes || 'No notes yet.')}</p>
       </article>
     </section>
-    <section class="card" style="margin-top:1rem"><h2>Possible Dupes / Similar Items</h2>${dupes.length ? dupeList(dupes) : '<p class="muted">No strong dupe warnings.</p>'}</section>`;
+    <section class="card" style="margin-top:1rem"><h2>👯 Possible Dupes / Similar Items</h2>${dupes.length ? dupeList(dupes) : '<p class="muted">No strong dupe warnings.</p>'}</section>`;
 }
 
 function detailRow(label, value) { return `<p><strong>${label}:</strong> ${escapeHtml(value || '—')}</p>`; }
@@ -145,7 +145,7 @@ function renderItemForm(id) {
   if (!item) return `<div class="card empty-state">Item not found.</div>`;
   const dupes = isEdit ? dupeWarningsForItem(item, state.data.items) : [];
   return `
-    <section><h2>${isEdit ? 'Edit Item' : 'Add Item'}</h2><p class="muted">Use this for polishes and supplies. Yes, even the tiny bag of nail stars with commitment issues.</p></section>
+    <section><h2>${isEdit ? '🖊️ Edit Item' : '💅 Add Item'}</h2><p class="muted">Use this for polishes and supplies. Photos are auto-compressed so phone uploads do not bully the save button.</p></section>
     <form class="card form-grid" id="itemForm">
       <label>Item Type<select name="productType">${optionTags(ITEM_TYPES, item.productType)}</select></label>
       <label>Brand<input name="brand" value="${escapeHtml(item.brand)}" /></label>
@@ -168,14 +168,14 @@ function renderItemForm(id) {
       <label>Bottle Photo<input name="bottlePhotoFile" type="file" accept="image/*" /></label>
       <label>Swatch Photo<input name="swatchPhotoFile" type="file" accept="image/*" /></label>
       <input type="hidden" name="id" value="${escapeHtml(item.id)}" />
-      <div class="actions full"><button class="button" type="submit">Save Item</button><button class="ghost" type="button" data-route="items">Cancel</button></div>
+      <div class="actions full"><button class="button" type="submit">Save Item 💾</button><button class="ghost" type="button" data-route="items">Cancel</button></div>
     </form>
-    ${dupes.length ? `<section class="card" style="margin-top:1rem"><h2>Current Dupe Warnings</h2>${dupeList(dupes)}</section>` : ''}`;
+    ${dupes.length ? `<section class="card" style="margin-top:1rem"><h2>👯 Current Dupe Warnings</h2>${dupeList(dupes)}</section>` : ''}`;
 }
 
 function renderLooks() {
   return `
-    <section class="split"><div><h2>The Look Book</h2><p class="muted">Turn inspo into reusable nail recipes with linked items and requirement types.</p></div><button class="button" data-route="add-look">Create Look</button></section>
+    <section class="split"><div><h2>✨ The Look Book</h2><p class="muted">Turn inspo into reusable nail recipes with linked items, requirement types, and easy little colorway checks.</p></div><button class="button" data-route="add-look">✨ Create Look</button></section>
     ${helpPanel('Requirement types', reqHelpHtml(), showHelp())}
     <section class="grid auto">${state.data.looks.length ? state.data.looks.map(look => lookCard(look, evaluateLook(state.data, look.id))).join('') : '<div class="card empty-state">No looks yet. Time to bottle some chaos.</div>'}</section>`;
 }
@@ -190,7 +190,7 @@ function renderLookDetail() {
     ${helpPanel('How to choose requirement types', reqHelpHtml(), showHelp())}
     <section class="grid two">
       <article class="card"><div class="thumb">${look.inspoImage ? `<img src="${look.inspoImage}" alt="Inspo">` : 'Inspo Image'}</div><hr><div class="badges"><span class="badge accent">${escapeHtml(look.difficulty)}</span><span class="badge ${status.ready ? 'good' : 'warn'}">${status.label}</span></div></article>
-      <article class="card"><h2>Can I Make This?</h2>${statusSummary(status)}<hr><h3>Possible Colorways</h3>${variations.length ? variations.map(v => `<p><strong>${escapeHtml(v.colorFamily)}</strong>: ${escapeHtml(itemLabel(v.item))}</p>`).join('') : '<p class="muted">No substitutions found yet.</p>'}</article>
+      <article class="card"><h2>🪄 Can I Make This?</h2>${statusSummary(status)}<hr><h3>🎨 Possible Colorways</h3>${variations.length ? variations.map(v => `<p><strong>${escapeHtml(v.colorFamily)}</strong>: ${escapeHtml(itemLabel(v.item))}</p>`).join('') : '<p class="muted">No substitutions found yet.</p>'}</article>
     </section>
     <section style="margin-top:1rem" class="grid">${status.steps.map(stepResultCard).join('')}</section>`;
 }
@@ -217,7 +217,7 @@ function renderLookForm(id) {
   const look = isEdit ? state.data.looks.find(l => l.id === id) : emptyLook();
   if (!look) return `<div class="card empty-state">Look not found.</div>`;
   return `
-    <section><h2>${isEdit ? 'Edit Look' : 'Create Look'}</h2><p class="muted">A look is a tutorial, recipe, or design idea built from stash items.</p></section>
+    <section><h2>${isEdit ? 'Edit Look' : '✨ Create Look'}</h2><p class="muted">A look is a tutorial, recipe, or design idea built from stash items.</p></section>
     <form class="card form-grid" id="lookForm">
       <label>Title<input name="title" required value="${escapeHtml(look.title)}" /></label>
       <label>Difficulty<select name="difficulty">${optionTags(DIFFICULTIES, look.difficulty)}</select></label>
@@ -228,7 +228,7 @@ function renderLookForm(id) {
       <label>Inspo Image<input name="inspoImageFile" type="file" accept="image/*" /></label>
       <label>Final Image<input name="finalImageFile" type="file" accept="image/*" /></label>
       <input type="hidden" name="id" value="${escapeHtml(look.id)}" />
-      <div class="actions full"><button class="button" type="submit">Save Look</button><button class="ghost" type="button" data-route="looks">Cancel</button></div>
+      <div class="actions full"><button class="button" type="submit">Save Look 💾</button><button class="ghost" type="button" data-route="looks">Cancel</button></div>
     </form>`;
 }
 
@@ -237,7 +237,7 @@ function renderTutorialBuilder() {
   if (!look) return `<div class="card empty-state">Look not found.</div>`;
   const steps = stepsForLook(state.data, look.id);
   return `
-    <section class="split"><div><h2>Tutorial Builder</h2><p class="muted">${escapeHtml(look.title)}</p></div><button class="button" data-action="add-step" data-id="${look.id}">Add Step</button></section>
+    <section class="split"><div><h2>🧪 Tutorial Builder</h2><p class="muted">${escapeHtml(look.title)}</p></div><button class="button" data-action="add-step" data-id="${look.id}">＋ Add Step</button></section>
     ${helpPanel('Requirement types', reqHelpHtml(), showHelp())}
     <section class="grid">${steps.length ? steps.map(stepEditor).join('') : '<div class="card empty-state">No steps yet. Add the first one.</div>'}</section>`;
 }
@@ -257,24 +257,24 @@ function stepEditor(step) {
     <label>Rule Opacity<input name="ruleOpacity" value="${escapeHtml(step.replacementRule?.opacity || 'Any')}" /></label>
     <label class="full">Rule Tags<input name="ruleTags" value="${escapeHtml(tagsToString(step.replacementRule?.tags || []))}" /></label>
     <label class="full">Step Notes<textarea name="notes">${escapeHtml(step.notes)}</textarea></label>
-    <div class="actions full"><button class="button" type="submit">Save Step</button><button class="danger" type="button" data-action="delete-step" data-id="${step.id}">Delete Step</button></div>
+    <div class="actions full"><button class="button" type="submit">Save Step 💾</button><button class="danger" type="button" data-action="delete-step" data-id="${step.id}">Delete Step</button></div>
   </form>`;
 }
 
 function renderDupes() {
   const groups = allDupeGroups(state.data.items);
-  return `<section><h2>Dupe Goblin</h2><p class="muted">Find exact duplicates and suspiciously similar stash gremlins.</p></section>
+  return `<section><h2>👯 Dupe Goblin</h2><p class="muted">Find exact duplicates and suspiciously similar stash twins before you buy the same sparkle twice.</p></section>
     ${groups.length ? `<section class="grid">${groups.map(group => `<article class="card"><h3>${escapeHtml(itemLabel(group.candidate))}</h3>${dupeList(group.warnings)}</article>`).join('')}</section>` : '<div class="card empty-state">No dupe warnings yet.</div>'}`;
 }
 
 function renderSettings() {
-  return `<section><h2>Settings / Backup</h2><p class="muted">Local-first. Export backups early and often.</p></section>
+  return `<section><h2>🫧 Settings & Backup</h2><p class="muted">Local-first. Export backups early and often, beautiful little data goblin.</p></section>
     <section class="card form-grid">
       <label>Active Owner<input id="activeOwner" value="${escapeHtml(state.data.settings.activeOwner || 'Jay')}" /></label>
       <label><input id="toggleHelp" type="checkbox" ${showHelp() ? 'checked' : ''} /> Show help panels on screens</label>
       <div class="actions full"><button class="button" id="saveSettings">Save Settings</button><button class="ghost" id="exportBackup">Export Backup</button><label class="ghost">Import Backup<input id="importBackup" type="file" accept="application/json" hidden /></label><button class="danger" id="resetDemo">Reset Demo Data</button></div>
     </section>
-    <section class="card" style="margin-top:1rem"><h2>What’s in v0.1.0</h2><p>Items model, inventory, low stock, restock, dupe checker, looks, tutorial steps, requirement help, substitution rules, can-I-make-this logic, JSON backup/import, and PWA shell.</p></section>`;
+    <section class="card" style="margin-top:1rem"><h2>What’s in this preview</h2><p>Items model, inventory, low stock, restock, dupe checker, looks, tutorial steps, requirement help, substitution rules, can-I-make-this logic, JSON backup/import, GitHub Pages preview mode, plus the v0.1.1 save/photo compression patch.</p></section>`;
 }
 
 async function saveItemForm(form) {
@@ -290,7 +290,17 @@ async function saveItemForm(form) {
   if (bottle) item.bottlePhoto = await readImageAsDataUrl(bottle);
   if (swatch) item.swatchPhoto = await readImageAsDataUrl(swatch);
   if (!existing) state.data.items.unshift(item);
-  persist();
+
+  try {
+    persist();
+  } catch (error) {
+    // Photo-heavy localStorage can fill up fast on phones. Save the item without photos instead of losing the whole entry.
+    item.bottlePhoto = existing?.bottlePhoto || '';
+    item.swatchPhoto = existing?.swatchPhoto || '';
+    persist();
+    alert(`${error.message} The item was saved without new photos so the polish entry was not lost.`);
+  }
+
   navigate('item-detail', { id: item.id });
 }
 
@@ -325,15 +335,20 @@ function saveStepForm(form) {
 }
 
 function showGlobalHelp() {
-  helpContent.innerHTML = `<h3>Requirement Types</h3>${reqHelpHtml()}<hr><h3>App Shape</h3><p><strong>Items</strong> are everything in the stash. <strong>Looks</strong> are tutorials or recipes. <strong>Steps</strong> link looks to items and tell the checker what is required, flexible, or optional.</p>`;
+  helpContent.innerHTML = `<h3>🫶 Requirement Types</h3>${reqHelpHtml()}<hr><h3>🗂️ App Shape</h3><p><strong>Items</strong> are everything in the stash. <strong>Looks</strong> are tutorials or recipes. <strong>Steps</strong> link looks to items and tell the checker what is required, flexible, or optional.</p>`;
   helpDialog.showModal();
 }
 
 app.addEventListener('submit', async event => {
   event.preventDefault();
-  if (event.target.id === 'itemForm') await saveItemForm(event.target);
-  if (event.target.id === 'lookForm') await saveLookForm(event.target);
-  if (event.target.classList.contains('step-form')) saveStepForm(event.target);
+  try {
+    if (event.target.id === 'itemForm') await saveItemForm(event.target);
+    if (event.target.id === 'lookForm') await saveLookForm(event.target);
+    if (event.target.classList.contains('step-form')) saveStepForm(event.target);
+  } catch (error) {
+    console.error('Save failed:', error);
+    alert(`Save failed: ${error.message || error}`);
+  }
 });
 
 app.addEventListener('input', event => {

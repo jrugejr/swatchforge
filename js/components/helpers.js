@@ -19,12 +19,37 @@ export function imageOrPlaceholder(src, label) {
   return `<span>${escapeHtml(label)}</span>`;
 }
 
-export function readImageAsDataUrl(file) {
+export function readImageAsDataUrl(file, options = {}) {
+  const { maxSize = 900, quality = 0.72 } = options;
   return new Promise((resolve, reject) => {
     if (!file) return resolve('');
+
     const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
+    reader.onerror = () => reject(new Error('Could not read image file.'));
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = () => resolve(reader.result);
+      img.onload = () => {
+        try {
+          const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+          const width = Math.max(1, Math.round(img.width * scale));
+          const height = Math.max(1, Math.round(img.height * scale));
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          const mime = file.type === 'image/png' && scale === 1 ? 'image/png' : 'image/jpeg';
+          resolve(canvas.toDataURL(mime, quality));
+        } catch (error) {
+          console.warn('Image compression failed; saving original image.', error);
+          resolve(reader.result);
+        }
+      };
+      img.src = reader.result;
+    };
     reader.readAsDataURL(file);
   });
 }
