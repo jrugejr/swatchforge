@@ -1,4 +1,4 @@
-# SwatchForge v0.1.3 — Wife Beta Fixes
+# SwatchForge v0.1.4 — Filter Fix
 
 A local-first static GitHub Pages preview for tracking nail-art items, avoiding duplicate buys, watching low-stock supplies, and turning inspo into reusable nail-look recipes.
 
@@ -118,3 +118,11 @@ This build addresses the first real tester feedback:
 - Successful item/look/step saves now show a visible confirmation.
 - Wishlist dashboard shortcut now applies a real Wishlist filter instead of searching for the word "wishlist".
 - Search no longer re-renders after every character, so the phone keyboard should stay open.
+
+## v0.1.4 Filter Fix
+
+- Fixed the Low/restock dashboard card so it opens the stash with `Low/restock only` applied.
+- Added an active-filter notice above the stash list.
+- Added a clear-filters button in the active-filter notice.
+- Made Wishlist dashboard filtering explicit too.
+- Tapping the normal Stash tab now clears quick dashboard filters.

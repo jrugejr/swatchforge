@@ -106,6 +106,18 @@ function statCard(number, label, route, quickFilter = '') {
   return `<button class="card stat-card" data-route="${route}" data-quick-filter="${quickFilter}" style="text-align:left;border:1px solid var(--line)"><strong>${number}</strong><span>${label}</span></button>`;
 }
 
+function activeItemFilterNotice() {
+  const active = [];
+  if (state.filters.lowOnly) active.push('Low/restock only');
+  if (state.filters.status && state.filters.status !== 'All') active.push(`Status: ${state.filters.status}`);
+  if (state.filters.itemType !== 'All') active.push(`Type: ${state.filters.itemType}`);
+  if (state.filters.colorFamily !== 'All') active.push(`Family: ${state.filters.colorFamily}`);
+  if (state.filters.finish !== 'All') active.push(`Finish: ${state.filters.finish}`);
+  if (state.filters.itemSearch) active.push(`Search: ${state.filters.itemSearch}`);
+  if (!active.length) return '';
+  return `<section class="card notice" style="margin-bottom:1rem"><strong>Active filter:</strong> ${active.map(escapeHtml).join(' · ')} <button class="ghost" id="clearItemSearch" type="button" style="margin-left:.5rem">Clear filters</button></section>`;
+}
+
 function renderItems() {
   const items = filterItems(state.data.items, state.filters);
   return `
@@ -113,6 +125,7 @@ function renderItems() {
       <div><h2>💅 My Stash</h2><p class="muted">Track every polish, tool, powder, charm, sticker, and top coat in one pretty little stash.</p></div>
       <button class="button" data-route="add-item">💅 Add Item</button>
     </section>
+    ${activeItemFilterNotice()}
     ${helpPanel('What counts as an item?', `<p>An item is anything used to create a look: polish, base coat, top coat, gel, chrome powder, nail art brush, magnet wand, rhinestones, stickers, decals, charms, or supplies.</p>`, showHelp())}
     <section class="card filterbar">
       <div class="row">
@@ -305,7 +318,7 @@ function renderSettings() {
       <label><input id="toggleHelp" type="checkbox" ${showHelp() ? 'checked' : ''} /> Show help panels on screens</label>
       <div class="actions full"><button class="button" id="saveSettings">Save Settings</button><button class="ghost" id="exportBackup">Export Backup</button><label class="ghost">Import Backup<input id="importBackup" type="file" accept="application/json" hidden /></label><button class="danger" id="resetDemo">Reset Demo Data</button></div>
     </section>
-    <section class="card" style="margin-top:1rem"><h2>What’s in v0.1.3</h2><p>Items model, inventory, low stock, restock, dupe checker, looks, tutorial steps, requirement help, substitution rules, can-I-make-this logic, JSON backup/import, GitHub Pages preview mode, plus the v0.1.1 save/photo compression patch.</p></section>`;
+    <section class="card" style="margin-top:1rem"><h2>What’s in v0.1.4</h2><p>Items model, inventory, low stock, restock, dupe checker, looks, tutorial steps, requirement help, substitution rules, can-I-make-this logic, JSON backup/import, GitHub Pages preview mode, plus the v0.1.1 save/photo compression patch.</p></section>`;
 }
 
 async function saveItemForm(form) {
@@ -437,6 +450,8 @@ app.addEventListener('click', async event => {
       state.filters.finish = 'All';
       state.filters.status = 'All';
       state.filters.lowOnly = true;
+      navigate('items');
+      return;
     }
     if (quick === 'Wishlist') {
       state.filters.itemSearch = '';
@@ -445,6 +460,8 @@ app.addEventListener('click', async event => {
       state.filters.finish = 'All';
       state.filters.status = 'Wishlist';
       state.filters.lowOnly = false;
+      navigate('items');
+      return;
     }
     navigate(routeEl.dataset.route, routeEl.dataset.id ? { id: routeEl.dataset.id } : {});
   }
@@ -475,7 +492,17 @@ document.body.addEventListener('change', async event => {
   }
 });
 
-document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => navigate(tab.dataset.route)));
+document.querySelectorAll('.tab').forEach(tab => tab.addEventListener('click', () => {
+  if (tab.dataset.route === 'items') {
+    state.filters.itemSearch = '';
+    state.filters.itemType = 'All';
+    state.filters.colorFamily = 'All';
+    state.filters.finish = 'All';
+    state.filters.status = 'All';
+    state.filters.lowOnly = false;
+  }
+  navigate(tab.dataset.route);
+}));
 document.querySelector('#helpButton').addEventListener('click', showGlobalHelp);
 document.querySelector('#closeHelp').addEventListener('click', () => helpDialog.close());
 document.querySelector('#backButton').addEventListener('click', () => history.length > 1 ? history.back() : navigate('home'));

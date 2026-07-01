@@ -57,3 +57,11 @@ Initial full-skeleton release.
 - Fixed Wishlist dashboard filtering.
 - Fixed search keyboard crash by stopping full-screen re-render on every typed character.
 - Added Apply Search and Clear buttons.
+
+## v0.1.4 — Filter Fix
+
+- Fixed Low/restock dashboard shortcut filtering.
+- Added active item filter notice.
+- Added clear-filters button to the notice.
+- Made dashboard quick filters return early after applying their intended filter.
+- Normal Stash tab now clears dashboard quick filters.
