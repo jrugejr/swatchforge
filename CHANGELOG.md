@@ -47,3 +47,13 @@ Initial full-skeleton release.
 - Added emoji labels to top-level navigation and screen headings.
 - Kept the GitHub Pages preview/static behavior intact.
 - Kept the save/photo compression patch intact.
+
+## v0.1.3 — Wife Beta Fixes
+
+- Split item entry into a simpler basic form plus a collapsible detailed/catalog section.
+- Added comma-separated tag guidance.
+- Added opacity dropdown options and field help.
+- Added save confirmation toast messages.
+- Fixed Wishlist dashboard filtering.
+- Fixed search keyboard crash by stopping full-screen re-render on every typed character.
+- Added Apply Search and Clear buttons.

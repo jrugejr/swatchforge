@@ -1,6 +1,6 @@
 export function emptyItem() {
   return {
-    id: '', productType: 'Polish', brand: '', collection: '', itemName: '', colorCode: '', barcode: '', colorFamily: 'Other', finish: 'Other', opacity: '', specialEffect: '', hexEstimate: '#d99aaa', bottlePhoto: '', swatchPhoto: '', amountLeft: 'Full', ownedStatus: 'Owned', restock: false, owner: 'Jay', visibility: 'Private', notes: '', tags: [], createdAt: '', updatedAt: ''
+    id: '', productType: 'Polish', brand: '', collection: '', itemName: '', colorCode: '', barcode: '', colorFamily: 'Other', finish: 'Other', opacity: 'Unknown', specialEffect: '', hexEstimate: '#d99aaa', bottlePhoto: '', swatchPhoto: '', amountLeft: 'Full', ownedStatus: 'Owned', restock: false, owner: 'Jay', visibility: 'Private', notes: '', tags: [], createdAt: '', updatedAt: ''
   };
 }
 

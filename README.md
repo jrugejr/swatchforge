@@ -1,4 +1,4 @@
-# SwatchForge v0.1.2 — Daykeeper Theme Preview
+# SwatchForge v0.1.3 — Wife Beta Fixes
 
 A local-first static GitHub Pages preview for tracking nail-art items, avoiding duplicate buys, watching low-stock supplies, and turning inspo into reusable nail-look recipes.
 
@@ -106,3 +106,15 @@ This preview adds a softer Daykeeper-inspired visual theme for wife beta testing
 - emoji navigation labels
 - cozier notebook-like look and feel
 - same GitHub Pages static setup and save patch behavior
+
+## v0.1.3 Wife Beta Fixes
+
+This build addresses the first real tester feedback:
+
+- Item form now has a basic record first, with advanced/catalog fields tucked under **More details**.
+- Tags field now clearly says comma-separated and gives an example.
+- Opacity is now a dropdown with help text.
+- Finish and opacity are explained separately.
+- Successful item/look/step saves now show a visible confirmation.
+- Wishlist dashboard shortcut now applies a real Wishlist filter instead of searching for the word "wishlist".
+- Search no longer re-renders after every character, so the phone keyboard should stay open.

@@ -10,6 +10,8 @@ export const FINISHES = [
   'Creme', 'Jelly', 'Sheer', 'Shimmer', 'Glitter', 'Holographic', 'Chrome', 'Metallic', 'Pearl', 'Magnetic / Cat Eye', 'Thermal', 'Matte', 'Topper', 'Flakie', 'Duochrome', 'Multichrome', 'Glow', 'Clear', 'Base Coat', 'Top Coat', 'Tool', 'Decoration', 'Other'
 ];
 
+export const OPACITIES = ['Unknown', 'One-coat opaque', 'Two-coat opaque', 'Three-plus coats', 'Sheer / Buildable', 'Topper only', 'Clear', 'Other'];
+
 export const AMOUNTS = ['Full', 'Mostly Full', 'Half', 'Low', 'Empty', 'Backup Owned', 'Unknown'];
 export const OWNED_STATUSES = ['Owned', 'Wishlist', 'Used Up', 'Decluttered', 'Borrowed'];
 export const DIFFICULTIES = ['Beginner', 'Intermediate', 'Advanced', 'Chaos Gremlin'];

@@ -1,6 +1,6 @@
 import { state, persist, uid, today } from './state.js';
 import { exportData, importDataFromFile, resetData } from './storage.js';
-import { ITEM_TYPES, COLOR_FAMILIES, FINISHES, AMOUNTS, OWNED_STATUSES, DIFFICULTIES, VISIBILITIES, REQUIREMENT_TYPES, TECHNIQUE_ROLES } from './data/option-lists.js';
+import { ITEM_TYPES, COLOR_FAMILIES, FINISHES, OPACITIES, AMOUNTS, OWNED_STATUSES, DIFFICULTIES, VISIBILITIES, REQUIREMENT_TYPES, TECHNIQUE_ROLES } from './data/option-lists.js';
 import { emptyItem, emptyLook, emptyStep } from './schema.js';
 import { escapeHtml, optionTags, tagsToString, stringToTags, helpPanel, readImageAsDataUrl } from './components/helpers.js';
 import { itemCard, lookCard } from './components/cards.js';
@@ -11,12 +11,28 @@ import { evaluateLook, possibleVariations, stepsForLook } from './logic/lookLogi
 const app = document.querySelector('#app');
 const helpDialog = document.querySelector('#helpDialog');
 const helpContent = document.querySelector('#helpContent');
+const toast = document.querySelector('#toast');
 const showHelp = () => state.data.settings?.showHelpPanels !== false;
 
 const reqHelpHtml = () => `
   <div class="help-list">
     ${REQUIREMENT_TYPES.map(type => `<div><strong>${type.value}</strong><span>${type.meaning}</span></div>`).join('')}
   </div>`;
+
+const opacityHelpHtml = () => `
+  <div class="help-list">
+    <div><strong>Finish</strong><span>What the polish looks like: jelly, creme, shimmer, chrome, glitter, topper, etc.</span></div>
+    <div><strong>Opacity</strong><span>How much it covers: one-coat opaque, two-coat opaque, sheer/buildable, topper only, clear, etc.</span></div>
+    <div><strong>Tags</strong><span>Use commas between tags. Example: <span class="kbd">glass, jelly, wedding, chrome</span>. Multiple tags go in the same box.</span></div>
+  </div>`;
+
+function showToast(message) {
+  if (!toast) return alert(message);
+  toast.textContent = message;
+  toast.classList.add('show');
+  clearTimeout(showToast.timer);
+  showToast.timer = setTimeout(() => toast.classList.remove('show'), 2200);
+}
 
 function navigate(route, params = {}) {
   state.route = route;
@@ -105,6 +121,13 @@ function renderItems() {
         <select id="familyFilter"><option>All</option>${optionTags(COLOR_FAMILIES, state.filters.colorFamily)}</select>
         <select id="finishFilter"><option>All</option>${optionTags(FINISHES, state.filters.finish)}</select>
       </div>
+      <div class="actions">
+        <select id="statusFilter" aria-label="Owned status filter"><option>All</option>${optionTags(OWNED_STATUSES, state.filters.status)}</select>
+        <label style="display:flex;align-items:center;gap:.45rem;font-weight:850"><input id="lowOnlyFilter" type="checkbox" ${state.filters.lowOnly ? 'checked' : ''} style="width:auto" /> Low/restock only</label>
+        <button class="ghost" id="applyItemSearch" type="button">Apply Search</button>
+        <button class="ghost" id="clearItemSearch" type="button">Clear</button>
+      </div>
+      <p class="field-help">Tip: type your search, then tap <strong>Apply Search</strong>. This keeps the phone keyboard from vanishing after one letter.</p>
     </section>
     <section class="grid auto">${items.length ? items.map(itemCard).join('') : '<div class="card empty-state">No matching items. The stash goblin found dust.</div>'}</section>`;
 }
@@ -143,30 +166,38 @@ function renderItemForm(id) {
   const isEdit = Boolean(id);
   const item = isEdit ? findItem(state.data, id) : emptyItem();
   if (!item) return `<div class="card empty-state">Item not found.</div>`;
-  const dupes = isEdit ? dupeWarningsForItem(item, state.data.items) : [];
+  const dupes = dupeWarningsForItem(state.data.items.filter(i => i.id !== item.id), item);
   return `
-    <section><h2>${isEdit ? '🖊️ Edit Item' : '💅 Add Item'}</h2><p class="muted">Use this for polishes and supplies. Photos are auto-compressed so phone uploads do not bully the save button.</p></section>
+    <section><h2>${isEdit ? '🖊️ Edit Item' : '💅 Add Item'}</h2><p class="muted">Start with the basic record. Open “More details” only when you need codes, barcode, owner, or extra catalog info.</p></section>
+    ${helpPanel('Quick field help', opacityHelpHtml(), showHelp())}
     <form class="card form-grid" id="itemForm">
       <label>Item Type<select name="productType">${optionTags(ITEM_TYPES, item.productType)}</select></label>
       <label>Brand<input name="brand" value="${escapeHtml(item.brand)}" /></label>
-      <label>Collection<input name="collection" value="${escapeHtml(item.collection)}" /></label>
-      <label>Item / Color Name<input name="itemName" required value="${escapeHtml(item.itemName)}" /></label>
-      <label>Color Code<input name="colorCode" value="${escapeHtml(item.colorCode)}" /></label>
-      <label>Barcode<input name="barcode" value="${escapeHtml(item.barcode)}" /></label>
+      <label class="full">Item / Color Name<input name="itemName" required value="${escapeHtml(item.itemName)}" placeholder="Bubble Bath, Silver Chrome Powder, Detail Brush…" /></label>
       <label>Color Family<select name="colorFamily">${optionTags(COLOR_FAMILIES, item.colorFamily)}</select></label>
-      <label>Finish<select name="finish">${optionTags(FINISHES, item.finish)}</select></label>
-      <label>Opacity<input name="opacity" placeholder="Translucent, opaque, sheer…" value="${escapeHtml(item.opacity)}" /></label>
-      <label>Special Effect<input name="specialEffect" placeholder="Chrome, magnetic, glow…" value="${escapeHtml(item.specialEffect)}" /></label>
-      <label>Hex / Swatch Color<input name="hexEstimate" type="color" value="${escapeHtml(item.hexEstimate || '#d99aaa')}" /></label>
+      <label>Finish<select name="finish">${optionTags(FINISHES, item.finish)}</select><span class="field-help">Look/texture: creme, jelly, glitter, chrome, shimmer, topper, etc.</span></label>
+      <label>Opacity<select name="opacity">${optionTags(OPACITIES, item.opacity || 'Unknown')}</select><span class="field-help">Coverage level, not the visual finish.</span></label>
       <label>Amount Left<select name="amountLeft">${optionTags(AMOUNTS, item.amountLeft)}</select></label>
       <label>Owned Status<select name="ownedStatus">${optionTags(OWNED_STATUSES, item.ownedStatus)}</select></label>
-      <label>Owner<input name="owner" value="${escapeHtml(item.owner || state.data.settings.activeOwner || 'Jay')}" /></label>
-      <label>Visibility<select name="visibility">${optionTags(VISIBILITIES, item.visibility)}</select></label>
       <label class="full"><input type="checkbox" name="restock" ${item.restock ? 'checked' : ''} /> Add to restock list</label>
-      <label class="full">Tags<input name="tags" placeholder="jelly, glass, red" value="${escapeHtml(tagsToString(item.tags))}" /></label>
+      <label class="full">Tags, comma-separated<input name="tags" placeholder="glass, jelly, wedding, chrome" value="${escapeHtml(tagsToString(item.tags))}" /><span class="field-help">Yes: put commas between tags. Multiple tags go in this one box.</span></label>
       <label class="full">Notes<textarea name="notes">${escapeHtml(item.notes)}</textarea></label>
-      <label>Bottle Photo<input name="bottlePhotoFile" type="file" accept="image/*" /></label>
-      <label>Swatch Photo<input name="swatchPhotoFile" type="file" accept="image/*" /></label>
+      <label>Bottle / Item Photo<input name="bottlePhotoFile" type="file" accept="image/*" /></label>
+      <label>Swatch / Example Photo<input name="swatchPhotoFile" type="file" accept="image/*" /></label>
+
+      <details class="details-card">
+        <summary>More details / catalog fields</summary>
+        <div class="form-grid" style="margin-top:.9rem">
+          <label>Collection<input name="collection" value="${escapeHtml(item.collection)}" /></label>
+          <label>Color Code<input name="colorCode" value="${escapeHtml(item.colorCode)}" /></label>
+          <label>Barcode<input name="barcode" value="${escapeHtml(item.barcode)}" /></label>
+          <label>Special Effect<input name="specialEffect" placeholder="Magnetic, glow, iridescent…" value="${escapeHtml(item.specialEffect)}" /></label>
+          <label>Hex / Swatch Color<input name="hexEstimate" type="color" value="${escapeHtml(item.hexEstimate || '#d99aaa')}" /></label>
+          <label>Owner<input name="owner" value="${escapeHtml(item.owner || state.data.settings.activeOwner || 'Jay')}" /></label>
+          <label>Visibility<select name="visibility">${optionTags(VISIBILITIES, item.visibility)}</select></label>
+        </div>
+      </details>
+
       <input type="hidden" name="id" value="${escapeHtml(item.id)}" />
       <div class="actions full"><button class="button" type="submit">Save Item 💾</button><button class="ghost" type="button" data-route="items">Cancel</button></div>
     </form>
@@ -274,7 +305,7 @@ function renderSettings() {
       <label><input id="toggleHelp" type="checkbox" ${showHelp() ? 'checked' : ''} /> Show help panels on screens</label>
       <div class="actions full"><button class="button" id="saveSettings">Save Settings</button><button class="ghost" id="exportBackup">Export Backup</button><label class="ghost">Import Backup<input id="importBackup" type="file" accept="application/json" hidden /></label><button class="danger" id="resetDemo">Reset Demo Data</button></div>
     </section>
-    <section class="card" style="margin-top:1rem"><h2>What’s in this preview</h2><p>Items model, inventory, low stock, restock, dupe checker, looks, tutorial steps, requirement help, substitution rules, can-I-make-this logic, JSON backup/import, GitHub Pages preview mode, plus the v0.1.1 save/photo compression patch.</p></section>`;
+    <section class="card" style="margin-top:1rem"><h2>What’s in v0.1.3</h2><p>Items model, inventory, low stock, restock, dupe checker, looks, tutorial steps, requirement help, substitution rules, can-I-make-this logic, JSON backup/import, GitHub Pages preview mode, plus the v0.1.1 save/photo compression patch.</p></section>`;
 }
 
 async function saveItemForm(form) {
@@ -283,7 +314,27 @@ async function saveItemForm(form) {
   const item = existing || emptyItem();
   const stamp = today();
   Object.assign(item, {
-    id: existing?.id || uid('itm'), productType: fd.get('productType'), brand: fd.get('brand').trim(), collection: fd.get('collection').trim(), itemName: fd.get('itemName').trim(), colorCode: fd.get('colorCode').trim(), barcode: fd.get('barcode').trim(), colorFamily: fd.get('colorFamily'), finish: fd.get('finish'), opacity: fd.get('opacity').trim(), specialEffect: fd.get('specialEffect').trim(), hexEstimate: fd.get('hexEstimate'), amountLeft: fd.get('amountLeft'), ownedStatus: fd.get('ownedStatus'), restock: fd.get('restock') === 'on', owner: fd.get('owner').trim(), visibility: fd.get('visibility'), notes: fd.get('notes').trim(), tags: stringToTags(fd.get('tags')), createdAt: existing?.createdAt || stamp, updatedAt: stamp
+    id: existing?.id || uid('itm'),
+    productType: fd.get('productType') || 'Polish',
+    brand: String(fd.get('brand') || '').trim(),
+    collection: String(fd.get('collection') || '').trim(),
+    itemName: String(fd.get('itemName') || '').trim(),
+    colorCode: String(fd.get('colorCode') || '').trim(),
+    barcode: String(fd.get('barcode') || '').trim(),
+    colorFamily: fd.get('colorFamily') || 'Other',
+    finish: fd.get('finish') || 'Other',
+    opacity: fd.get('opacity') || 'Unknown',
+    specialEffect: String(fd.get('specialEffect') || '').trim(),
+    hexEstimate: fd.get('hexEstimate') || item.hexEstimate || '#d99aaa',
+    amountLeft: fd.get('amountLeft') || 'Unknown',
+    ownedStatus: fd.get('ownedStatus') || 'Owned',
+    restock: fd.get('restock') === 'on',
+    owner: String(fd.get('owner') || state.data.settings.activeOwner || 'Jay').trim(),
+    visibility: fd.get('visibility') || 'Private',
+    notes: String(fd.get('notes') || '').trim(),
+    tags: stringToTags(fd.get('tags') || ''),
+    createdAt: existing?.createdAt || stamp,
+    updatedAt: stamp
   });
   const bottle = form.elements.bottlePhotoFile.files[0];
   const swatch = form.elements.swatchPhotoFile.files[0];
@@ -297,10 +348,17 @@ async function saveItemForm(form) {
     // Photo-heavy localStorage can fill up fast on phones. Save the item without photos instead of losing the whole entry.
     item.bottlePhoto = existing?.bottlePhoto || '';
     item.swatchPhoto = existing?.swatchPhoto || '';
-    persist();
-    alert(`${error.message} The item was saved without new photos so the polish entry was not lost.`);
+    try {
+      persist();
+      showToast('Saved without new photos — browser storage was full.');
+    } catch (secondError) {
+      console.error('Save failed even after removing new photos:', secondError);
+      alert(`${secondError.message || secondError} Try exporting a backup, clearing old photos, or testing without images first.`);
+      return;
+    }
   }
 
+  showToast('Saved! Item added to the stash.');
   navigate('item-detail', { id: item.id });
 }
 
@@ -316,6 +374,7 @@ async function saveLookForm(form) {
   if (final) look.finalImage = await readImageAsDataUrl(final);
   if (!existing) state.data.looks.unshift(look);
   persist();
+  showToast('Saved! Look added to the Look Book.');
   navigate('tutorial-builder', { id: look.id });
 }
 
@@ -331,6 +390,7 @@ function saveStepForm(form) {
   step.replacementRule = { productType: fd.get('ruleProductType'), colorFamily: fd.get('ruleColorFamily'), finish: fd.get('ruleFinish'), opacity: fd.get('ruleOpacity').trim() || 'Any', tags: stringToTags(fd.get('ruleTags')) };
   step.notes = fd.get('notes').trim();
   persist();
+  showToast('Saved! Step updated.');
   render();
 }
 
@@ -352,13 +412,17 @@ app.addEventListener('submit', async event => {
 });
 
 app.addEventListener('input', event => {
-  if (event.target.id === 'itemSearch') { state.filters.itemSearch = event.target.value; render(); }
+  if (event.target.id === 'itemSearch') {
+    state.filters.itemSearch = event.target.value;
+  }
 });
 
 app.addEventListener('change', event => {
   if (event.target.id === 'itemTypeFilter') { state.filters.itemType = event.target.value; render(); }
   if (event.target.id === 'familyFilter') { state.filters.colorFamily = event.target.value; render(); }
   if (event.target.id === 'finishFilter') { state.filters.finish = event.target.value; render(); }
+  if (event.target.id === 'statusFilter') { state.filters.status = event.target.value; render(); }
+  if (event.target.id === 'lowOnlyFilter') { state.filters.lowOnly = event.target.checked; render(); }
 });
 
 app.addEventListener('click', async event => {
@@ -366,16 +430,40 @@ app.addEventListener('click', async event => {
   const actionEl = event.target.closest('[data-action]');
   if (routeEl) {
     const quick = routeEl.dataset.quickFilter;
-    if (quick === 'Low') { state.filters.itemSearch = ''; state.filters.itemType = 'All'; state.filters.colorFamily = 'All'; state.filters.finish = 'All'; }
-    if (quick === 'Wishlist') { state.filters.itemSearch = 'wishlist'; }
+    if (quick === 'Low') {
+      state.filters.itemSearch = '';
+      state.filters.itemType = 'All';
+      state.filters.colorFamily = 'All';
+      state.filters.finish = 'All';
+      state.filters.status = 'All';
+      state.filters.lowOnly = true;
+    }
+    if (quick === 'Wishlist') {
+      state.filters.itemSearch = '';
+      state.filters.itemType = 'All';
+      state.filters.colorFamily = 'All';
+      state.filters.finish = 'All';
+      state.filters.status = 'Wishlist';
+      state.filters.lowOnly = false;
+    }
     navigate(routeEl.dataset.route, routeEl.dataset.id ? { id: routeEl.dataset.id } : {});
   }
   if (event.target.id === 'inlineHelpButton') showGlobalHelp();
+  if (event.target.id === 'applyItemSearch') render();
+  if (event.target.id === 'clearItemSearch') {
+    state.filters.itemSearch = '';
+    state.filters.itemType = 'All';
+    state.filters.colorFamily = 'All';
+    state.filters.finish = 'All';
+    state.filters.status = 'All';
+    state.filters.lowOnly = false;
+    render();
+  }
   if (actionEl?.dataset.action === 'view-item') navigate('item-detail', { id: actionEl.dataset.id });
   if (actionEl?.dataset.action === 'delete-item' && confirm('Delete this item?')) { state.data.items = state.data.items.filter(item => item.id !== actionEl.dataset.id); persist(); navigate('items'); }
   if (actionEl?.dataset.action === 'add-step') { const steps = stepsForLook(state.data, actionEl.dataset.id); const step = emptyStep(actionEl.dataset.id, steps.length + 1); step.id = uid('stp'); state.data.lookSteps.push(step); persist(); render(); }
   if (actionEl?.dataset.action === 'delete-step' && confirm('Delete this step?')) { state.data.lookSteps = state.data.lookSteps.filter(step => step.id !== actionEl.dataset.id); persist(); render(); }
-  if (event.target.id === 'saveSettings') { state.data.settings.activeOwner = document.querySelector('#activeOwner').value.trim() || 'Jay'; state.data.settings.showHelpPanels = document.querySelector('#toggleHelp').checked; persist(); render(); }
+  if (event.target.id === 'saveSettings') { state.data.settings.activeOwner = document.querySelector('#activeOwner').value.trim() || 'Jay'; state.data.settings.showHelpPanels = document.querySelector('#toggleHelp').checked; persist(); showToast('Settings saved.'); render(); }
   if (event.target.id === 'exportBackup') exportData(state.data);
   if (event.target.id === 'resetDemo' && confirm('Reset all local data to demo data?')) { state.data = resetData(); render(); }
 });

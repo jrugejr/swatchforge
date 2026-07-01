@@ -13,12 +13,30 @@ export function wishlistItems(data) {
 export function filterItems(items, filters) {
   const q = (filters.itemSearch || '').toLowerCase();
   return items.filter(item => {
-    const haystack = [item.brand, item.collection, item.itemName, item.colorCode, item.barcode, item.colorFamily, item.finish, item.productType, item.owner, ...(item.tags || [])].join(' ').toLowerCase();
+    const haystack = [
+      item.brand,
+      item.collection,
+      item.itemName,
+      item.colorCode,
+      item.barcode,
+      item.colorFamily,
+      item.finish,
+      item.productType,
+      item.owner,
+      item.ownedStatus,
+      item.amountLeft,
+      item.restock ? 'restock low shopping list' : '',
+      ...(item.tags || [])
+    ].join(' ').toLowerCase();
+
     const matchesSearch = !q || haystack.includes(q);
     const matchesType = filters.itemType === 'All' || item.productType === filters.itemType;
     const matchesFamily = filters.colorFamily === 'All' || item.colorFamily === filters.colorFamily;
     const matchesFinish = filters.finish === 'All' || item.finish === filters.finish;
-    return matchesSearch && matchesType && matchesFamily && matchesFinish;
+    const matchesStatus = !filters.status || filters.status === 'All' || item.ownedStatus === filters.status;
+    const matchesLow = filters.lowOnly ? (['Low', 'Empty'].includes(item.amountLeft) || item.restock) : true;
+
+    return matchesSearch && matchesType && matchesFamily && matchesFinish && matchesStatus && matchesLow;
   });
 }
 

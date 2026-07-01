@@ -99,3 +99,38 @@
 .dialog-close { float: right; border: 0; background: transparent; font-size: 1.8rem; color: var(--brand-dark); }
 .kbd { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.82rem; background: #f8eef4; border-radius: 6px; padding: 0.1rem 0.3rem; }
 @media (max-width: 760px) { .filterbar .row { grid-template-columns: 1fr; } .help-list div { grid-template-columns: 1fr; } }
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 1.2rem;
+  transform: translateX(-50%) translateY(150%);
+  z-index: 20;
+  max-width: min(92vw, 460px);
+  background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.85rem 1.05rem;
+  box-shadow: 0 16px 34px rgba(126,72,102,0.25);
+  font-weight: 850;
+  transition: transform 180ms ease;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+.details-card {
+  grid-column: 1 / -1;
+  border: 1px dashed rgba(197,108,154,0.32);
+  border-radius: 18px;
+  padding: 0.8rem;
+  background: rgba(255,255,255,0.55);
+}
+.details-card summary {
+  cursor: pointer;
+  color: var(--brand-dark);
+  font-weight: 900;
+}
+.field-help {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+  font-weight: 600;
+}

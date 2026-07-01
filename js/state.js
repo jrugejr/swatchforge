@@ -8,7 +8,9 @@ export const state = {
     itemSearch: '',
     itemType: 'All',
     colorFamily: 'All',
-    finish: 'All'
+    finish: 'All',
+    status: 'All',
+    lowOnly: false
   }
 };
 
