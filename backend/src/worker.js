@@ -7,7 +7,7 @@ function json(value, status=200, headers={}) { return new Response(JSON.stringif
 function base64(bytes) { return btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
 function unbase64(s) { const raw=atob(s.replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(raw,c=>c.charCodeAt(0)); }
 async function sign(secret, text) {
-  const key=await crypto.subtle.importKey('raw',encoder.encode(secret),'HMAC',false,['sign']);
+  const key=await crypto.subtle.importKey('raw',encoder.encode(secret),{name:'HMAC',hash:'SHA-256'},false,['sign']);
   return base64(new Uint8Array(await crypto.subtle.sign('HMAC',key,encoder.encode(text))));
 }
 async function verifyToken(request,env) {
