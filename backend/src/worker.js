@@ -118,8 +118,17 @@ export default {
       if(!passwordValid(newPassword))return json({error:'New password must be 12–128 characters.'},400,headers);
       if(currentPassword===newPassword)return json({error:'Choose a password different from the current one.'},400,headers);
       await ensureAccounts(env);
+      const identity='change:'+profile+':'+await sign(env.SESSION_SECRET,request.headers.get('cf-connecting-ip')||'unknown');
+      const now=Date.now();
+      const tries=await env.DB.prepare('SELECT attempts, expires_at FROM login_attempts WHERE identity=?').bind(identity).first();
+      if(tries&&tries.expires_at>now&&tries.attempts>=5)return json({error:'Too many password attempts. Try again in fifteen minutes.'},429,headers);
       const account=await env.DB.prepare('SELECT * FROM studio_accounts WHERE profile=?').bind(profile).first();
-      if(!await currentPasswordOK(currentPassword,account,profile,env))return json({error:'Current password is incorrect.'},401,headers);
+      if(!await currentPasswordOK(currentPassword,account,profile,env)){
+        await env.DB.prepare('INSERT INTO login_attempts(identity,attempts,expires_at) VALUES(?,?,?) ON CONFLICT(identity) DO UPDATE SET attempts=CASE WHEN expires_at<? THEN 1 ELSE attempts+1 END, expires_at=?')
+          .bind(identity,1,now+900000,now,now+900000).run();
+        return json({error:'Current password is incorrect.'},401,headers);
+      }
+      await env.DB.prepare('DELETE FROM login_attempts WHERE identity=?').bind(identity).run();
       const next=await newPasswordRecord(newPassword);
       if(account){
         const updated=await env.DB.prepare('UPDATE studio_accounts SET salt=?, password_hash=?, iterations=?, session_version=?, updated_at=? WHERE profile=? AND session_version=?')
