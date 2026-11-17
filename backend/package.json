@@ -1,0 +1,1 @@
+{"name":"swatchforge-studio-api","private":true,"type":"module","scripts":{"deploy":"wrangler deploy","schema:remote":"wrangler d1 execute swatchforge-studio --remote --file=./schema.sql","dev":"wrangler dev"},"devDependencies":{"wrangler":"^4.0.0"}}
