@@ -7,7 +7,7 @@ compatibility_date = "2026-09-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "swatchforge-studio"
-database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+database_id = "e0fcd782-d50a-468b-97e7-6b09b8c93dae"
 
 # Run: npx wrangler r2 bucket create swatchforge-photos
 [[r2_buckets]]
