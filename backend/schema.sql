@@ -13,3 +13,14 @@ CREATE TABLE IF NOT EXISTS login_attempts (
   attempts INTEGER NOT NULL DEFAULT 0,
   expires_at INTEGER NOT NULL
 );
+
+-- Passwords are stored as salted PBKDF2 hashes, never plaintext.
+-- The Worker also creates this table automatically on first authenticated use.
+CREATE TABLE IF NOT EXISTS studio_accounts (
+  profile TEXT PRIMARY KEY CHECK(profile IN ('Bloo','Phoenixx')),
+  salt TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
+  iterations INTEGER NOT NULL,
+  session_version TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
