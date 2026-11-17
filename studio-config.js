@@ -1,2 +1,2 @@
-// Set the deployed Cloudflare Worker URL below. Public URL only: never store passwords here.
-window.SWATCHFORGE_API_URL = '';
+// Public API endpoint only. Studio passwords and API secrets remain in Cloudflare.
+window.SWATCHFORGE_API_URL = 'https://swatchforge-studio-api.jrugejr.workers.dev';
