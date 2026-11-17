@@ -12,7 +12,7 @@ async function sign(secret, text) {
 }
 // Private account passwords are stored as salted PBKDF2 hashes in D1.
 // Legacy Worker secrets are accepted only until an account has migrated.
-const PASSWORD_ITERATIONS=310000;
+const PASSWORD_ITERATIONS=100000;
 async function ensureAccounts(env){
   await env.DB.prepare("CREATE TABLE IF NOT EXISTS studio_accounts (profile TEXT PRIMARY KEY, salt TEXT NOT NULL, password_hash TEXT NOT NULL, iterations INTEGER NOT NULL, session_version TEXT NOT NULL, updated_at TEXT NOT NULL)").run();
 }
