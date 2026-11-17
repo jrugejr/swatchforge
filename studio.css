@@ -34,3 +34,42 @@
 
 /* After-purchase next action: retain shopping history without making the user hunt. */
 .purchase-confirm{padding:8px 0 5px}.purchase-confirm .eyebrow{color:var(--gold);letter-spacing:.17em;font-size:.72rem}.purchase-confirm h2{margin:12px 0;color:var(--berry)}.purchase-confirm p{max-width:48ch}.purchase-confirm .actions{margin-top:23px;display:flex;flex-wrap:wrap;gap:10px}.purchase-confirm .button{white-space:normal}
+
+/* Nail Photo Studio: optional phone camera + post-session local framing. */
+.nail-photo-tools{display:flex;align-items:center;flex-wrap:wrap;gap:7px;grid-column:1/-1;margin:-5px 0 12px}
+.nail-photo-tools .button{font-size:.79rem;padding:7px 10px}
+.nail-photo-file-note{font-size:.76rem;color:var(--muted);overflow-wrap:anywhere}
+#nail-photo-studio{border:1px solid #b08d57;background:#f8f0e5;border-radius:15px;box-shadow:0 24px 80px #1907159a;padding:0;width:min(580px,calc(100vw - 16px));max-height:96vh;color:#281b22}
+#nail-photo-studio::backdrop{background:#170513dc}
+#nail-photo-studio [hidden]{display:none!important}
+.nail-studio-inner{padding:18px 22px 22px}
+.nail-studio-heading{display:flex;align-items:start;justify-content:space-between;gap:14px}
+.nail-studio-heading h2{margin:2px 0 5px;font-size:1.55rem}
+.nail-studio-heading p{font-size:.84rem;margin-bottom:10px;color:var(--muted)}
+.nail-studio-eyebrow{font-size:.63rem;font-weight:800;color:#925d39;letter-spacing:.18em}
+.nail-studio-x{width:34px;height:34px;border:1px solid #bb9970;background:#f4e5d5;border-radius:50%;font-size:22px;flex-shrink:0}
+.nail-studio-tabs{display:flex;gap:7px;margin:4px 0 13px;flex-wrap:wrap}
+.nail-studio-tabs .button{padding:8px 11px;font-size:.84rem}
+.nail-studio-tabs .nail-tab-active{background:#64283e;color:#fff4e6;border-color:#64283e}
+.nail-studio-select{font-size:.82rem;margin-bottom:4px}
+.nail-studio-select select{padding:8px}
+.nail-mode-hint{font-size:.78rem;color:#705b63;margin:8px 0 10px}
+.nail-camera-window{position:relative;width:min(100%,360px);max-height:52vh;margin:0 auto;background:#200d17;border-radius:13px;overflow:hidden;border:4px solid #d2b183}
+#nail-video{width:100%;height:100%;position:absolute;inset:0;object-fit:cover;background:#1b0b13}
+.nail-camera-guides{position:absolute;inset:0;pointer-events:none;display:grid;place-items:center}
+.nail-guide-frame{height:82%;width:76%;border:2px dashed #f3d6a3;border-radius:18px;box-shadow:0 0 0 999px #12061130,inset 0 0 15px #12061120;position:relative}
+.nail-guide-frame::before,.nail-guide-frame::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);opacity:.8}
+.nail-guide-full .nail-guide-nails{position:absolute;inset:12% 14%;border:1px solid #f4d8a3a8;border-radius:45% 45% 25% 25%;transform:rotate(-9deg)}
+.nail-guide-detail{width:78%;height:78%;border-radius:50%}
+.nail-guide-detail .nail-guide-nails{position:absolute;left:37%;top:14%;width:26%;height:67%;border:2px solid #fff2d7a8;border-radius:45% 45% 30% 30%}
+.nail-guide-process{width:85%;height:72%;border-radius:10px}
+.nail-guide-cross{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%);border-left:1px solid #f0d6a18a;border-top:1px solid #f0d6a18a}
+.nail-studio-controls{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:12px}
+.nail-studio-controls .button{font-size:.83rem;padding:9px 11px}
+.nail-crop-canvas-wrap{display:flex;align-items:center;justify-content:center;max-height:52vh;padding:8px;border-radius:12px;background:#382232;overflow:hidden}
+#nail-crop-canvas{display:block;max-width:100%;max-height:49vh;width:auto;height:auto;object-fit:contain;touch-action:none;cursor:grab;border:1px solid #cfb07d;border-radius:7px}
+#nail-crop-canvas:active{cursor:grabbing}
+#nail-crop-area>label{margin:12px 0 4px;font-size:.82rem}
+#nail-zoom{padding:0;accent-color:#722a47}
+#nail-photo-status{font-size:.8rem;color:#705b63;background:#efe0ce;border-radius:6px;padding:8px 10px;margin:14px 0 0}
+@media(max-width:560px){.nail-studio-inner{padding:15px}.nail-camera-window{width:min(100%,330px)}.nail-photo-tools .button{font-size:.76rem;padding:8px 9px}}
