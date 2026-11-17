@@ -73,3 +73,6 @@
 #nail-zoom{padding:0;accent-color:#722a47}
 #nail-photo-status{font-size:.8rem;color:#705b63;background:#efe0ce;border-radius:6px;padding:8px 10px;margin:14px 0 0}
 @media(max-width:560px){.nail-studio-inner{padding:15px}.nail-camera-window{width:min(100%,330px)}.nail-photo-tools .button{font-size:.76rem;padding:8px 9px}}
+
+/* Private password change screen. */
+.account-settings{max-width:760px}.account-settings h2{margin:6px 0 12px}.account-settings .formgrid{margin-top:20px}.account-settings input[type=password]{letter-spacing:.05em}.account-settings .form-status{position:static}.account-settings .form-status[hidden]{display:none}
