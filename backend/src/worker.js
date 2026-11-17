@@ -37,7 +37,7 @@ function cleanRecord(kind,entry,profile) {
   if(kind==='items'&&!String(entry.name||'').trim())throw Error('Item name is required.');
   if(kind==='recipes'&&!String(entry.title||'').trim())throw Error('Recipe title is required.');
   if(kind==='shopping'&&!String(entry.name||'').trim())throw Error('Shopping item name is required.');
-  const data={...entry,id,owner:kind==='items'?profile:(entry.owner||profile),updatedAt:new Date().toISOString()};
+  const data={...entry,id,owner:profile,updatedAt:new Date().toISOString()};
   return data;
 }
 export default {
@@ -83,8 +83,7 @@ export default {
         const previous=incomingId?await env.DB.prepare('SELECT owner FROM records WHERE kind=? AND id=?').bind(kind,incomingId).first():null;
         if(kind==='items'&&previous&&previous.owner!==profile)return json({error:'Only the owner can edit this item.'},403,headers);
         const record=cleanRecord(kind,payload,profile);
-        const existing=previous&&kind!=='items' ? previous.owner : null;
-        if(existing)record.owner=existing;
+        if(previous)record.owner=previous.owner;
         await env.DB.prepare('INSERT INTO records(kind,id,owner,data,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(kind,id) DO UPDATE SET data=excluded.data, owner=excluded.owner, updated_at=excluded.updated_at').bind(kind,record.id,record.owner,JSON.stringify(record),record.updatedAt).run();
         return json({ok:true,record},200,headers);
       }
