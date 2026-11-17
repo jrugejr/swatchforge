@@ -47,7 +47,7 @@ async function transferPurchase(shoppingId){
  if(purchase.recipient&&purchase.recipient!=='Shared'&&purchase.recipient!==who){notice('Sign in as '+purchase.recipient+' to add this item to their inventory.',true);return}
  if(!confirm('Add '+purchase.name+' to '+who+'’s inventory?'))return;
  try{
-   const record={id:crypto.randomUUID(),name:purchase.name,brand:purchase.brand||'',type:purchase.itemType||'Polish',amount:'Full',status:'Owned',sourceShoppingId:shoppingId,notes:[purchase.notes,purchase.productUrl].filter(Boolean).join('\n')};
+   const record={id:crypto.randomUUID(),name:purchase.name,brand:purchase.brand||'',type:purchase.itemType||'Polish',amount:'Full',status:'Owned',image:purchase.image||'',sourceShoppingId:shoppingId,notes:[purchase.notes,purchase.productUrl].filter(Boolean).join('\n')};
    const saved=await api('/api/items','POST',record);store.items.unshift(saved.record);
    try{const updated=await api('/api/shopping','POST',{...purchase,inventoryId:saved.record.id,purchased:true});const idx=store.shopping.findIndex(x=>x.id===shoppingId);if(idx>=0)store.shopping[idx]=updated.record;notice('Added to '+who+'’s inventory.')}catch(err){notice('Inventory item saved, but shopping link was not updated. Avoid adding it again; refresh and check your inventory.',true)}
    render();
