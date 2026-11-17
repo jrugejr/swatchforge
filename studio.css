@@ -31,3 +31,6 @@
 .shop-link:hover{text-decoration:underline}
 @media(max-width:720px){.shopping-entry{flex-wrap:wrap;align-items:flex-start}.shopping-actions{flex:0 0 100%;justify-content:flex-start;margin-left:93px}}
 @media(max-width:450px){.shopping-actions{margin-left:0}}
+
+/* After-purchase next action: retain shopping history without making the user hunt. */
+.purchase-confirm{padding:8px 0 5px}.purchase-confirm .eyebrow{color:var(--gold);letter-spacing:.17em;font-size:.72rem}.purchase-confirm h2{margin:12px 0;color:var(--berry)}.purchase-confirm p{max-width:48ch}.purchase-confirm .actions{margin-top:23px;display:flex;flex-wrap:wrap;gap:10px}.purchase-confirm .button{white-space:normal}
