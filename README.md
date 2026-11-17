@@ -1,128 +1,68 @@
-# SwatchForge v0.1.4 — Filter Fix
+# SwatchForge — A Gilded & Pressed Nail Studio
 
-A local-first static GitHub Pages preview for tracking nail-art items, avoiding duplicate buys, watching low-stock supplies, and turning inspo into reusable nail-look recipes.
+## v1.0 GitHub-hosted shared-studio preview
 
-## What is built
+This branch replaces the old per-browser localStorage prototype with the **Witchy Corpo** visual design from the Google Apps Script app. The frontend is an installable PWA hosted by GitHub Pages. The shared API runs on Cloudflare Workers, with **D1** for records and **R2** for private photos.
 
-- Items model from the start: polish, base coat, top coat, gel, powder, tools, stickers, charms, decorations, and other supplies.
-- Dashboard with stash, low-stock, wishlist, and ready-look counts.
-- Add/edit/delete item records.
-- Swatch color picker and image upload fields for bottle/swatch photos.
-- Item search and filters by type, color family, and finish.
-- Low stock/restock tracking.
-- Dupe Goblin similarity checker.
-- Look Book for tutorials/recipes.
-- Look editor with inspo/final image upload fields.
-- Tutorial Builder with step editor.
-- Requirement types with help panels:
-  - Exact Required
-  - Similar Allowed
-  - Any Color Works
-  - Optional
-  - Tool Required
-- Can-I-Make-This checker with missing/owned/substitution status.
-- Possible colorway suggestions.
-- Local JSON export/import backup.
-- GitHub Pages-ready static files.
+**Deployment status:** Source code is ready for review. The shared API is **not yet deployed or connected**, and the live GitHub Pages site on `main` remains unchanged. Do not merge this branch expecting saving to work until the backend checklist is complete.
 
-## How to run locally
+### Why the backend changed
 
-Open `index.html` in a browser, or serve the folder locally for the closest GitHub Pages-style test:
+GitHub Pages cannot securely hold a Google service-account key or write private Google Sheets directly. The current backend uses Cloudflare D1/R2 rather than the studio's Google Sheet/Drive. This means **existing Google Apps Script data is NOT automatically connected**. If you want Google storage specifically, we should add an authenticated Google connector and a migration path before swapping out the existing data.
 
-```bash
-python -m http.server 8000
-```
+Because Bloo and Phoenixx had not been able to populate a working shared inventory, this first preview assumes an empty database. Do not delete your existing Google Sheet or Drive folder.
 
-Then visit:
+## Included features
 
-```txt
-http://localhost:8000
-```
+- Bloo / Phoenixx studio login (separate long passphrases)
+- Shared studio inventory with owner protection on edits and deletes
+- Shared shopping ledger
+- Shared recipe book, with illustrated steps and product requirement types
+- Private image upload and download via R2
+- Print / Save as PDF via browser preview
+- Server-confirmed saves, visible errors, and refresh
+- Witchy Corpo colors, mobile layout, installable manifest
 
-## Important v0.1 notes
+**Not yet built:** a true automatic dupe scoring engine, barcode scanner, advanced substitutions, loan tracking, or Google Sheets synchronization.
 
-This is intentionally local-first. Data is saved in browser localStorage. Images are stored as data URLs inside the local browser data and backup JSON. That is fine for early testing, but a later version should move images to IndexedDB or cloud storage.
+## Set up backend (Cloudflare)
 
-## Recommended first testing pass
+You need a Cloudflare account with Workers, D1, and R2 access. These steps are completed by the account owner, **not** by Bloo/Phoenixx.
 
-1. Add a new polish.
-2. Add a non-polish item such as chrome powder, a nail brush, or rhinestones.
-3. Mark something Low and Restock.
-4. Create a new look.
-5. Add steps in Tutorial Builder.
-6. Try different requirement types.
-7. Check whether the look is ready to make.
-8. Export a backup.
-9. Reset demo data.
-10. Import the backup.
+1. Install Node.js. From the `backend` folder, run `npm install` (or `npx wrangler`).
+2. Sign in: `npx wrangler login`.
+3. Create database: `npx wrangler d1 create swatchforge-studio`.
+4. Copy the returned database ID into `backend/wrangler.toml`.
+5. Create photo storage: `npx wrangler r2 bucket create swatchforge-photos`.
+6. Create tables: `npx wrangler d1 execute swatchforge-studio --remote --file=./schema.sql`.
+7. Add **three secrets** from your local terminal, never the GitHub repo:
+   - `npx wrangler secret put BLOO_PASSWORD`
+   - `npx wrangler secret put PHOENIXX_PASSWORD`
+   - `npx wrangler secret put SESSION_SECRET`
+   Use different long random passphrases for the two members. `SESSION_SECRET` should be another independent random secret (at least 32 bytes).
+8. `npx wrangler deploy` from `backend`.
+9. Copy the deployed HTTPS Worker URL into **`studio-config.js`**, as `window.SWATCHFORGE_API_URL`. This URL is public; **never paste secrets into it**.
+10. Commit the config change, merge the PR, and confirm GitHub Pages is publishing `main` from the repository root.
 
-## Next likely versions
+Cloudflare R2 may require enabling billing. Check your Cloudflare plan before creating storage.
 
-- v0.1.1: bugfix pass after phone testing.
-- v0.2.0: stronger tutorial builder UX.
-- v0.3.0: better substitution and variation logic.
-- v0.4.0: stronger duplicate scoring and item comparison.
-- v0.5.0: printable/exportable recipe cards.
+### Verify
 
+- Open the deployed Worker URL with `/api/health` appended. It should return JSON containing `"ok":true`.
+- Open GitHub Pages in a private browser window and log in as Bloo.
+- Create **TEST POLISH** with no photo. Confirm **Saved successfully**, refresh, and verify it persists.
+- Log in as Phoenixx on another device. Confirm the same item appears.
+- Try a recipe, a shopping item, and a small photo.
+- Test printing a recipe with a step photo.
 
-## GitHub Pages Preview Build
+### Security and sharing
 
-This version is meant to run as a normal static GitHub Pages site, not as an installable PWA.
+- GitHub Pages is publicly viewable; **records and photos require a studio token**.
+- Profiles are separate, and inventory edits are limited to the item's owner.
+- The API rate-limits failed studio login attempts per source IP/profile.
+- Protect Cloudflare access and keep secrets only in Wrangler secrets.
+- Custom password login is intended for a **small private beta**, not a publicly sold multi-tenant SaaS. Use managed authentication before scaling.
 
-### Upload option A: repository root
+## Editing and rollback
 
-1. Create a new GitHub repository, for example `swatchforge`.
-2. Upload the contents of this folder, not the folder itself. `index.html` should be at the repo root.
-3. Go to **Settings → Pages**.
-4. Under **Build and deployment**, choose **Deploy from a branch**.
-5. Select the `main` branch and `/root`, then save.
-6. Open the GitHub Pages URL once it finishes deploying.
-
-### Upload option B: docs folder
-
-1. Put this entire app inside a `/docs` folder in an existing repo.
-2. Go to **Settings → Pages**.
-3. Select the `main` branch and `/docs`, then save.
-
-### Notes
-
-- This build intentionally has **no manifest** and **no active service worker registration** so it should not prompt to install or aggressively cache old files.
-- Data is still saved locally in the browser using the current device/browser storage.
-- Use **Settings → Export Backup** before clearing browser data or switching devices.
-- For quick testing, open the GitHub Pages link on her phone and add it to the home screen manually only if desired; it will still act like a regular website.
-
-
-## v0.1.1 save patch
-
-This build compresses uploaded item/look photos before saving and shows visible save errors instead of failing silently. If browser storage fills up, item entries are preserved without the new photos.
-
-
-## v0.1.2 Daykeeper-style theme pass
-
-This preview adds a softer Daykeeper-inspired visual theme for wife beta testing:
-
-- warmer pastel + blush/lavender palette
-- friendlier topbar and card styling
-- emoji navigation labels
-- cozier notebook-like look and feel
-- same GitHub Pages static setup and save patch behavior
-
-## v0.1.3 Wife Beta Fixes
-
-This build addresses the first real tester feedback:
-
-- Item form now has a basic record first, with advanced/catalog fields tucked under **More details**.
-- Tags field now clearly says comma-separated and gives an example.
-- Opacity is now a dropdown with help text.
-- Finish and opacity are explained separately.
-- Successful item/look/step saves now show a visible confirmation.
-- Wishlist dashboard shortcut now applies a real Wishlist filter instead of searching for the word "wishlist".
-- Search no longer re-renders after every character, so the phone keyboard should stay open.
-
-## v0.1.4 Filter Fix
-
-- Fixed the Low/restock dashboard card so it opens the stash with `Low/restock only` applied.
-- Added an active-filter notice above the stash list.
-- Added a clear-filters button in the active-filter notice.
-- Made Wishlist dashboard filtering explicit too.
-- Tapping the normal Stash tab now clears quick dashboard filters.
+The prior GitHub Pages prototype remains in Git history. The current production site stays unchanged until this branch is merged. You can continue using the Apps Script deployment as a reference; it is not modified by this branch.
