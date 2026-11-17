@@ -15,3 +15,19 @@
 .recipe-list .recipe-actions{display:flex;flex:0 0 auto;gap:8px;justify-content:flex-end;align-items:center;align-self:center}
 @media(max-width:660px){.recipe-list .recipe-entry{align-items:flex-start;gap:12px;padding:12px}.recipe-list .recipe-thumb-wrap{width:76px;height:76px;flex-basis:76px}.recipe-list .recipe-thumb{width:76px;height:76px;max-width:76px;max-height:76px}.recipe-list .recipe-actions{flex-basis:100%;justify-content:flex-start;margin-left:88px}}
 @media(max-width:420px){.recipe-list .recipe-actions{margin-left:0}}
+
+/* Shopping Ledger 2.0 — compact catalog with product links and shareable notes. */
+.shopping-filter-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;flex-wrap:wrap}
+.shopping-filter-row .button{padding:8px 12px}
+.shopping-entry{align-items:center;gap:15px;padding:14px 16px;min-width:0}
+.shopping-thumb{width:78px;height:78px;max-width:78px;max-height:78px;flex:0 0 78px;object-fit:contain;object-position:center;background:#f7ebdf;padding:5px;border:1px solid #cfaf8b;border-radius:9px}
+.shopping-placeholder{display:grid;place-items:center;color:#ae8a58;font:30px Georgia,serif}
+.shopping-entry .content{min-width:0;flex:1}
+.shopping-entry .content h3{margin:0 0 3px}
+.shopping-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
+.shopping-note{font-size:.86rem;white-space:pre-line;overflow-wrap:anywhere;color:var(--muted);margin:6px 0 0!important}
+.shopping-actions{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;flex-shrink:0}
+.shop-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.shop-link:hover{text-decoration:underline}
+@media(max-width:720px){.shopping-entry{flex-wrap:wrap;align-items:flex-start}.shopping-actions{flex:0 0 100%;justify-content:flex-start;margin-left:93px}}
+@media(max-width:450px){.shopping-actions{margin-left:0}}
