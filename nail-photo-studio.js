@@ -43,12 +43,12 @@ function makeDialog(){
  el.addEventListener('cancel',()=>{stop();revoke();target=null});
  el.querySelector('[data-nail-close]').addEventListener('click',closeStudio);
  el.querySelector('[data-nail-tab="camera"]').addEventListener('click',()=>cameraPanel());
- el.querySelector('[data-nail-tab="crop"]').addEventListener('click',()=>cropPanel());
+ el.querySelector('[data-nail-tab="crop"]').addEventListener('click',()=>{if(source)showTab(false);else if(target?.files?.[0])loadFile(target.files[0]);else notify('Choose a photo first using the gallery or camera.');});
  el.querySelector('[data-nail-capture]').addEventListener('click',capture);
  el.querySelector('[data-nail-flip]').addEventListener('click',()=>{face=face==='environment'?'user':'environment';startCamera()});
  el.querySelector('[data-nail-apply]').addEventListener('click',applyCrop);
  el.querySelector('[data-nail-original]').addEventListener('click',()=>{if(source?.file){fileSet(target,source.file);closeStudio()}else notify('This image is a camera capture; use framed photo or retake.')});
- el.querySelector('[data-nail-retake]').addEventListener('click',()=>{if(source?.camera)cameraPanel();else {closeStudio();target?.click()}});
+ el.querySelector('[data-nail-retake]').addEventListener('click',()=>{if(source?.camera)cameraPanel();else {const input=target;closeStudio();input?.click()}});
  el.querySelector('#nail-mode').addEventListener('change',e=>{mode=e.target.value;setMode();renderCrop()});
  el.querySelector('#nail-zoom').addEventListener('input',e=>{zoom=Number(e.target.value);clampPan();renderCrop()});
  const canvas=el.querySelector('#nail-crop-canvas');
