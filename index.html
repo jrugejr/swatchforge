@@ -1,45 +1,25 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#c56c9a" />
-  <!-- GitHub Pages preview build: no manifest or service worker, so it behaves like a normal webpage. -->
-  <title>SwatchForge</title>
-  <link rel="stylesheet" href="css/base.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/components.css" />
-  <link rel="stylesheet" href="css/theme.css" />
-</head>
-<body>
-  <div class="app-shell">
-    <header class="topbar">
-      <button class="icon-button" id="backButton" title="Back" aria-label="Back">←</button>
-      <div>
-        <h1>SwatchForge ✨</h1>
-        <p class="tagline">A pretty little nail stash notebook for swatches, looks, and low-bottle drama.</p>
-      </div>
-      <button class="icon-button" id="helpButton" title="Help" aria-label="Help">?</button>
-    </header>
-
-    <nav class="tabbar" aria-label="Main navigation">
-      <button data-route="home" class="tab active">🏠 Home</button>
-      <button data-route="items" class="tab">💅 Stash</button>
-      <button data-route="looks" class="tab">✨ Looks</button>
-      <button data-route="dupes" class="tab">👯 Dupes</button>
-      <button data-route="settings" class="tab">🫧 Backup</button>
-    </nav>
-
-    <main id="app" class="screen" tabindex="-1"></main>
-    <div id="toast" class="toast" role="status" aria-live="polite"></div>
-  </div>
-
-  <dialog id="helpDialog" class="help-dialog">
-    <button class="dialog-close" id="closeHelp" aria-label="Close help">×</button>
-    <h2>✨ SwatchForge Help</h2>
-    <section id="helpContent"></section>
-  </dialog>
-
-  <script type="module" src="js/app.js"></script>
-</body>
-</html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#30101f">
+<title>SwatchForge — A Gilded & Pressed Nail Studio</title>
+<link rel="icon" href="./icon.svg" type="image/svg+xml">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="stylesheet" href="./studio.css">
+</head><body><div class="shell">
+<header class="masthead"><div class="mark" aria-hidden="true">☾</div>
+<div><div class="eyebrow">✦ GILDED & PRESSED ✦</div><h1>SwatchForge</h1><p>A Gilded & Pressed Nail Studio</p></div>
+<div class="account"><span id="user">The studio awaits</span><button id="refresh" class="button ghost" type="button" hidden>Refresh</button><button id="logout" class="button ghost" type="button" hidden>Sign out</button></div>
+</header>
+<nav id="nav" class="nav" aria-label="Studio sections" hidden>
+<button data-view="home" class="active">Studio Home</button>
+<button data-view="inventory">Studio Inventory</button>
+<button data-view="recipes">Recipe Book</button>
+<button data-view="shopping">Shopping Ledger</button>
+<button data-view="guide">Field Guide</button><span class="ornament" aria-hidden="true">☾ ◦ ☽</span></nav>
+<main id="app" class="main"><section class="card">Opening the atelier…</section></main>
+<footer class="footer">✦ SwatchForge · A Gilded & Pressed Nail Studio · v1.0 preview ✦</footer></div>
+<div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+<dialog id="editor"><div class="dialog-content"><button id="close-editor" type="button" class="close" aria-label="Close editor">×</button><div id="editor-content"></div></div></dialog>
+<script src="./studio-config.js"></script><script type="module" src="./studio.js"></script>
+</body></html>
