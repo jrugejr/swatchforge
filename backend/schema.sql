@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS studio_loans (
   due_date TEXT,
   checked_in_at TEXT,
   checked_in_by TEXT,
+  return_requested_at TEXT,
   item_snapshot TEXT NOT NULL
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_studio_active_loans ON studio_loans(item_id) WHERE checked_in_at IS NULL;
