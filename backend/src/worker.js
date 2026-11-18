@@ -76,6 +76,23 @@ function cleanRecord(kind,entry,profile) {
   const data={...entry,id,owner:profile,updatedAt:new Date().toISOString()};
   return data;
 }
+
+// Circulation is stored separately from ownership. One active checkout per inventory record.
+async function ensureLoans(env){
+ await env.DB.prepare("CREATE TABLE IF NOT EXISTS studio_loans (id TEXT PRIMARY KEY, item_id TEXT NOT NULL, owner TEXT NOT NULL, borrower TEXT NOT NULL, checked_out_at TEXT NOT NULL, due_date TEXT, checked_in_at TEXT, checked_in_by TEXT, item_snapshot TEXT NOT NULL)").run();
+ await env.DB.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_studio_active_loans ON studio_loans(item_id) WHERE checked_in_at IS NULL").run();
+ await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_studio_loan_history ON studio_loans(checked_out_at DESC)").run();
+}
+function loanData(row){
+ return {id:row.id,itemId:row.item_id,owner:row.owner,borrower:row.borrower,checkedOutAt:row.checked_out_at,dueDate:row.due_date||'',checkedInAt:row.checked_in_at||'',checkedInBy:row.checked_in_by||'',itemSnapshot:JSON.parse(row.item_snapshot)};
+}
+function validDueDate(value){
+ if(!value)return '';
+ if(typeof value!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(value))throw Error('Use a valid due date.');
+ const date=new Date(value+'T00:00:00Z');
+ if(Number.isNaN(date.getTime())||date.toISOString().slice(0,10)!==value)throw Error('Use a valid due date.');
+ return value;
+}
 export default {
  async fetch(request,env) {
   let headers={};
@@ -145,9 +162,50 @@ export default {
     }
     if(path==='/api/state'&&request.method==='GET') {
       const r=await env.DB.prepare('SELECT kind, data FROM records ORDER BY updated_at DESC').all();
-      const result={items:[],recipes:[],shopping:[],profile};
+      const result={items:[],recipes:[],shopping:[],loans:[],profile};
       for(const row of r.results){ if(result[row.kind]) result[row.kind].push(JSON.parse(row.data)); }
+      await ensureLoans(env);
+      const loans=await env.DB.prepare('SELECT * FROM studio_loans ORDER BY checked_out_at DESC LIMIT 500').all();
+      result.loans=loans.results.map(loanData);
       return json(result,200,headers);
+    }
+    if(path==='/api/loans/checkout'&&request.method==='POST'){
+      await ensureLoans(env);
+      const body=await request.json();
+      const itemId=String(body.itemId||'');
+      if(!/^[a-zA-Z0-9_-]{8,80}$/.test(itemId))return json({error:'Select a valid inventory item.'},400,headers);
+      const borrower=String(body.borrower||'');
+      if(!['Bloo','Phoenixx'].includes(borrower)||borrower===profile)return json({error:'Choose the other studio member as borrower.'},400,headers);
+      const item=await env.DB.prepare("SELECT data,owner FROM records WHERE kind='items' AND id=?").bind(itemId).first();
+      if(!item)return json({error:'Inventory item not found.'},404,headers);
+      if(item.owner!==profile)return json({error:'Only the owner can check out this item.'},403,headers);
+      const dueDate=validDueDate(body.dueDate);
+      const today=new Date().toISOString().slice(0,10);
+      if(dueDate&&dueDate<today)return json({error:'Due date must be today or later.'},400,headers);
+      const itemInfo=JSON.parse(item.data);
+      const loanId=crypto.randomUUID(),checkedOutAt=new Date().toISOString();
+      const snapshot=JSON.stringify({name:String(itemInfo.name||'Inventory item'),brand:String(itemInfo.brand||''),color:String(itemInfo.color||''),image:String(itemInfo.image||'')});
+      try{
+        await env.DB.prepare('INSERT INTO studio_loans(id,item_id,owner,borrower,checked_out_at,due_date,item_snapshot) VALUES(?,?,?,?,?,?,?)')
+          .bind(loanId,itemId,profile,borrower,checkedOutAt,dueDate||null,snapshot).run();
+      }catch(error){
+        if(/unique|constraint/i.test(String(error?.message||'')))return json({error:'This item is already checked out. Check it in before lending again.'},409,headers);
+        throw error;
+      }
+      return json({ok:true,loan:{id:loanId,itemId,owner:profile,borrower,checkedOutAt,dueDate,checkedInAt:'',checkedInBy:'',itemSnapshot:JSON.parse(snapshot)}},200,headers);
+    }
+    if(path==='/api/loans/checkin'&&request.method==='POST'){
+      await ensureLoans(env);
+      const body=await request.json(),loanId=String(body.id||'');
+      if(!/^[0-9a-f-]{36}$/i.test(loanId))return json({error:'Invalid checkout record.'},400,headers);
+      const loan=await env.DB.prepare('SELECT * FROM studio_loans WHERE id=?').bind(loanId).first();
+      if(!loan)return json({error:'Checkout record not found.'},404,headers);
+      if(profile!==loan.owner&&profile!==loan.borrower)return json({error:'Only the lender or borrower can check this item in.'},403,headers);
+      if(loan.checked_in_at)return json({error:'This item has already been checked in.'},409,headers);
+      const now=new Date().toISOString();
+      const updated=await env.DB.prepare('UPDATE studio_loans SET checked_in_at=?, checked_in_by=? WHERE id=? AND checked_in_at IS NULL').bind(now,profile,loanId).run();
+      if(updated.meta?.changes!==1)return json({error:'This item was already checked in. Refresh the circulation desk.'},409,headers);
+      return json({ok:true,loan:loanData({...loan,checked_in_at:now,checked_in_by:profile})},200,headers);
     }
     const recordMatch=path.match(/^\/api\/(items|recipes|shopping)(?:\/([a-zA-Z0-9_-]+))?$/);
     if(recordMatch){
@@ -164,6 +222,7 @@ export default {
       if(request.method==='DELETE'&&id){
         const previous=await env.DB.prepare('SELECT owner FROM records WHERE kind=? AND id=?').bind(kind,id).first();
         if(kind==='items'&&previous&&previous.owner!==profile)return json({error:'Only the owner can delete this item.'},403,headers);
+        if(kind==='items'){await ensureLoans(env);const onLoan=await env.DB.prepare('SELECT id FROM studio_loans WHERE item_id=? AND checked_in_at IS NULL').bind(id).first();if(onLoan)return json({error:'This item is checked out. Check it in before deleting the inventory record.'},409,headers);}
         await env.DB.prepare('DELETE FROM records WHERE kind=? AND id=?').bind(kind,id).run();
         return json({ok:true,id},200,headers);
       }
