@@ -13,15 +13,40 @@ function fileSet(input,file){const d=new DataTransfer();d.items.add(file);input.
 function stop(){if(stream){for(const t of stream.getTracks())t.stop();stream=null}const v=$('#nail-video');if(v)v.srcObject=null}
 function revoke(){if(sourceURL){URL.revokeObjectURL(sourceURL);sourceURL=''}source=null}
 function closeStudio(){stop();revoke();if(dlg()?.open)dlg().close();target=null;lastPointer=null}
+async function cameraReadyFile(file){
+ if(file.size<=3.8e6&&['image/jpeg','image/png','image/webp'].includes(file.type))return file;
+ const url=URL.createObjectURL(file);
+ try{
+  const img=new Image();img.src=url;await img.decode();
+  const scale=Math.min(1,2000/Math.max(img.naturalWidth,img.naturalHeight));
+  const canvas=document.createElement('canvas');canvas.width=Math.round(img.naturalWidth*scale);canvas.height=Math.round(img.naturalHeight*scale);
+  canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
+  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.82));
+  if(!blob||blob.size>4e6)throw Error('Image is too large; try a smaller resolution.');
+  return new File([blob],safeName(file.name)+'.jpg',{type:'image/jpeg'});
+ }finally{URL.revokeObjectURL(url)}
+}
 function wrapFileFields(){
  const editor=$('#editor-content');if(!editor)return;
  for(const input of editor.querySelectorAll('input[type="file"][accept*="image"]')){
   if(input.dataset.studioReady)continue;input.dataset.studioReady='yes';
   const group=document.createElement('div');group.className='nail-photo-tools';
-  group.innerHTML='<button type="button" class="button secondary" data-nail-camera>Guided camera</button><button type="button" class="button secondary" data-nail-batch>Add from gallery</button><button type="button" class="button secondary" data-nail-crop>Crop selected photo</button><span class="nail-photo-file-note">Normal upload also works. Framing is optional.</span>';
+  group.innerHTML='<button type="button" class="button secondary" data-nail-native>Open phone camera</button><button type="button" class="button secondary" data-nail-camera>Guided camera</button><button type="button" class="button secondary" data-nail-batch>Choose from gallery</button><button type="button" class="button secondary" data-nail-crop>Crop selected photo</button><span class="nail-photo-file-note">Normal upload also works. Framing is optional.</span>';
   input.closest('label')?.insertAdjacentElement('afterend',group);
   input.addEventListener('change',()=>{const note=group.querySelector('.nail-photo-file-note');if(note)note.textContent=input.files[0]?'Selected: '+input.files[0].name:'Normal upload also works. Framing is optional.'});
   for(const btn of group.querySelectorAll('button'))btn.dataset.photoInput='yes';
+  group.querySelector('[data-nail-native]').addEventListener('click',()=>{
+   const picker=document.createElement('input');
+   picker.type='file';picker.accept='image/*';picker.capture='environment';
+   picker.style.position='fixed';picker.style.left='-200vw';document.body.appendChild(picker);
+   let chosen=false;
+   picker.addEventListener('change',async()=>{
+    chosen=true;const file=picker.files?.[0];picker.remove();if(!file)return;
+    try{fileSet(input,await cameraReadyFile(file))}catch(err){const note=group.querySelector('.nail-photo-file-note');if(note)note.textContent='Could not prepare camera photo: '+err.message}
+   },{once:true});
+   picker.click();
+   window.addEventListener('focus',()=>{setTimeout(()=>{if(!chosen&&!picker.files?.length)picker.remove()},1200)},{once:true});
+  });
   group.querySelector('[data-nail-camera]').addEventListener('click',()=>openStudio(input,true));
   group.querySelector('[data-nail-batch]').addEventListener('click',()=>input.click());
   group.querySelector('[data-nail-crop]').addEventListener('click',()=>{if(input.files?.[0])openStudio(input,false,input.files[0]);else{input.click();}});
