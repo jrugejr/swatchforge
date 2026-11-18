@@ -99,3 +99,22 @@
 .sf-hue::-moz-range-thumb{width:21px;height:25px;border:3px solid #fff;border-radius:8px;background:#4e1d35}
 .sf-hex{font-family:ui-monospace,Consolas,monospace;font-weight:800;letter-spacing:.08em;max-width:200px}
 @media(max-width:580px){.sf-palette{padding:12px}.sf-gradient-preview{height:105px}.sf-sv{height:215px}.sf-shift-choice{min-width:64px}}
+
+/* Searchable recipe inventory supply picker. */
+.recipe-supply-picker{display:grid;gap:9px;border:1px solid #c8a982;background:#fffaf0;padding:14px;border-radius:10px;grid-column:1/-1;min-width:0}
+.recipe-supply-picker>strong{font:normal 1.12rem Georgia,serif;color:var(--berry)}
+.recipe-supply-picker p{margin:0}
+.recipe-supply-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(135px,190px);gap:8px}
+.recipe-supply-controls input,.recipe-supply-controls select{width:100%;min-width:0}
+.recipe-supply-results{display:grid;gap:5px;max-height:260px;overflow-y:auto}
+.recipe-supply-result{display:flex;align-items:center;gap:10px;text-align:left;min-height:58px;padding:8px 10px;border-radius:7px;border:1px solid #e0cdb6;background:#fffdfa;color:var(--ink)}
+.recipe-supply-result:hover,.recipe-supply-result:focus-visible{background:#f5e7d8;border-color:#b58b64}
+.recipe-supply-result>span:nth-child(2){display:grid;gap:3px;flex:1;min-width:0}
+.recipe-supply-result strong{font-size:.85rem;overflow-wrap:anywhere}
+.recipe-supply-result small{font-size:.73rem;color:var(--muted)}
+.recipe-supply-swatch{width:34px;height:34px;flex:0 0 34px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #bca487}
+.recipe-supply-add{font-weight:800;white-space:nowrap;color:var(--berry);font-size:.78rem}
+.recipe-supply-selected{display:flex;flex-wrap:wrap;gap:7px}
+.recipe-supply-chip{display:inline-flex;align-items:center;gap:9px;border:1px solid #c5a27c;background:#efe1d0;border-radius:18px;padding:4px 5px 4px 11px;font-size:.8rem;overflow-wrap:anywhere}
+.recipe-supply-chip button{border:0;border-radius:50%;background:#60263f;color:white;width:24px;height:24px;flex:0 0 24px;font-size:18px;line-height:18px}
+@media(max-width:580px){.recipe-supply-controls{grid-template-columns:1fr}.recipe-supply-picker{padding:10px}.recipe-supply-result{min-height:64px}}
