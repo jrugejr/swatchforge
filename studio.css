@@ -126,3 +126,9 @@
 .inventory-photo-preview img[hidden]{display:none}
 .inventory-photo-preview p{margin-bottom:9px}
 .inventory-photo-preview .button{background:#f6e3dd;color:#7a2b42;border-color:#bb8f90}
+
+/* Recipe gel curing equipment and human-readable substitution rules. */
+.recipe-gel-option{display:flex;align-items:flex-start;gap:12px;border:1px solid #c9ae8d;border-radius:9px;padding:12px;background:#fff9ee;margin:4px 0}
+.recipe-gel-option input{width:20px;height:20px;flex:0 0 20px;margin-top:3px;accent-color:#651b35}
+.recipe-gel-option span{display:grid;gap:4px}
+.recipe-gel-option small,.recipe-requirement-help{display:block;color:#745e66;font-size:.78rem;line-height:1.45;font-weight:400}
