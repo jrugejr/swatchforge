@@ -140,3 +140,5 @@
 #loan-form .form-status{position:static}
 #loan-form .form-status[hidden]{display:none}
 @media(max-width:620px){.loan-entry{gap:10px}.loan-entry .button{margin-left:auto}}
+
+.loan-return-pending{color:#7d3e57;font-size:.8rem;font-weight:700;margin:5px 0 0!important}
