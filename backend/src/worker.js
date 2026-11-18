@@ -82,9 +82,11 @@ async function ensureLoans(env){
  await env.DB.prepare("CREATE TABLE IF NOT EXISTS studio_loans (id TEXT PRIMARY KEY, item_id TEXT NOT NULL, owner TEXT NOT NULL, borrower TEXT NOT NULL, checked_out_at TEXT NOT NULL, due_date TEXT, checked_in_at TEXT, checked_in_by TEXT, item_snapshot TEXT NOT NULL)").run();
  await env.DB.prepare("CREATE UNIQUE INDEX IF NOT EXISTS idx_studio_active_loans ON studio_loans(item_id) WHERE checked_in_at IS NULL").run();
  await env.DB.prepare("CREATE INDEX IF NOT EXISTS idx_studio_loan_history ON studio_loans(checked_out_at DESC)").run();
+ const cols=await env.DB.prepare("PRAGMA table_info(studio_loans)").all();
+ if(!cols.results.some(c=>c.name==='return_requested_at'))await env.DB.prepare("ALTER TABLE studio_loans ADD COLUMN return_requested_at TEXT").run();
 }
 function loanData(row){
- return {id:row.id,itemId:row.item_id,owner:row.owner,borrower:row.borrower,checkedOutAt:row.checked_out_at,dueDate:row.due_date||'',checkedInAt:row.checked_in_at||'',checkedInBy:row.checked_in_by||'',itemSnapshot:JSON.parse(row.item_snapshot)};
+ return {id:row.id,itemId:row.item_id,owner:row.owner,borrower:row.borrower,checkedOutAt:row.checked_out_at,dueDate:row.due_date||'',returnRequestedAt:row.return_requested_at||'',checkedInAt:row.checked_in_at||'',checkedInBy:row.checked_in_by||'',itemSnapshot:JSON.parse(row.item_snapshot)};
 }
 function validDueDate(value){
  if(!value)return '';
@@ -192,7 +194,21 @@ export default {
         if(/unique|constraint/i.test(String(error?.message||'')))return json({error:'This item is already checked out. Check it in before lending again.'},409,headers);
         throw error;
       }
-      return json({ok:true,loan:{id:loanId,itemId,owner:profile,borrower,checkedOutAt,dueDate,checkedInAt:'',checkedInBy:'',itemSnapshot:JSON.parse(snapshot)}},200,headers);
+      return json({ok:true,loan:{id:loanId,itemId,owner:profile,borrower,checkedOutAt,dueDate,returnRequestedAt:'',checkedInAt:'',checkedInBy:'',itemSnapshot:JSON.parse(snapshot)}},200,headers);
+    }
+    if(path==='/api/loans/request-return'&&request.method==='POST'){
+      await ensureLoans(env);
+      const body=await request.json(),loanId=String(body.id||'');
+      if(!/^[0-9a-f-]{36}$/i.test(loanId))return json({error:'Invalid checkout record.'},400,headers);
+      const loan=await env.DB.prepare('SELECT * FROM studio_loans WHERE id=?').bind(loanId).first();
+      if(!loan)return json({error:'Checkout record not found.'},404,headers);
+      if(loan.borrower!==profile)return json({error:'Only the borrower can request a return.'},403,headers);
+      if(loan.checked_in_at)return json({error:'This item is already checked in.'},409,headers);
+      if(loan.return_requested_at)return json({error:'Return has already been requested.'},409,headers);
+      const requestedAt=new Date().toISOString();
+      const updated=await env.DB.prepare('UPDATE studio_loans SET return_requested_at=? WHERE id=? AND checked_in_at IS NULL AND return_requested_at IS NULL').bind(requestedAt,loanId).run();
+      if(updated.meta?.changes!==1)return json({error:'Return status changed. Refresh the circulation desk.'},409,headers);
+      return json({ok:true,loan:loanData({...loan,return_requested_at:requestedAt})},200,headers);
     }
     if(path==='/api/loans/checkin'&&request.method==='POST'){
       await ensureLoans(env);
@@ -200,7 +216,7 @@ export default {
       if(!/^[0-9a-f-]{36}$/i.test(loanId))return json({error:'Invalid checkout record.'},400,headers);
       const loan=await env.DB.prepare('SELECT * FROM studio_loans WHERE id=?').bind(loanId).first();
       if(!loan)return json({error:'Checkout record not found.'},404,headers);
-      if(profile!==loan.owner&&profile!==loan.borrower)return json({error:'Only the lender or borrower can check this item in.'},403,headers);
+      if(profile!==loan.owner)return json({error:'Only the owner can confirm receipt and check in this item.'},403,headers);
       if(loan.checked_in_at)return json({error:'This item has already been checked in.'},409,headers);
       const now=new Date().toISOString();
       const updated=await env.DB.prepare('UPDATE studio_loans SET checked_in_at=?, checked_in_by=? WHERE id=? AND checked_in_at IS NULL').bind(now,profile,loanId).run();
