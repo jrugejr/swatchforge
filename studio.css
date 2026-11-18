@@ -142,3 +142,16 @@
 @media(max-width:620px){.loan-entry{gap:10px}.loan-entry .button{margin-left:auto}}
 
 .loan-return-pending{color:#7d3e57;font-size:.8rem;font-weight:700;margin:5px 0 0!important}
+
+/* Phase 1 material swatches: scalable checkerboard, layered build tint, no PNG needed. */
+.sf-material-swatch{display:inline-block;position:relative;overflow:hidden;isolation:isolate;vertical-align:middle}
+.sf-material-swatch.sf-checker,.sf-gradient-preview.sf-checker{background-color:#faf8f5;background-image:conic-gradient(#ded9d5 25%,#fffaf7 0 50%,#ded9d5 0 75%,#fffaf7 0);background-size:12px 12px}
+.sf-material-fill{position:absolute;inset:0;display:block;pointer-events:none}
+.sf-material-fill[hidden]{display:none!important}
+.sf-material-symbol{position:absolute;inset:0;display:grid;place-items:center;color:#4e233a;pointer-events:none}
+.sf-material-symbol svg{display:block;width:73%;height:73%;filter:drop-shadow(0 1px 1px rgba(255,255,255,.8))}
+.sf-gradient-preview{position:relative;overflow:hidden}
+.sf-gradient-preview .sf-material-symbol svg{width:70%;height:70%}
+.sf-mode-choice small{display:block;margin-top:5px;font-size:.78rem;color:#745e66}
+.sf-build-choice[hidden],.sf-clear-choice[hidden],.sf-palette [hidden],.sf-palette~label[hidden],label[hidden]{display:none!important}
+.sf-entry-photo{width:37px!important;height:37px!important;flex-basis:37px!important;object-fit:cover}
