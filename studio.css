@@ -118,3 +118,11 @@
 .recipe-supply-chip{display:inline-flex;align-items:center;gap:9px;border:1px solid #c5a27c;background:#efe1d0;border-radius:18px;padding:4px 5px 4px 11px;font-size:.8rem;overflow-wrap:anywhere}
 .recipe-supply-chip button{border:0;border-radius:50%;background:#60263f;color:white;width:24px;height:24px;flex:0 0 24px;font-size:18px;line-height:18px}
 @media(max-width:580px){.recipe-supply-controls{grid-template-columns:1fr}.recipe-supply-picker{padding:10px}.recipe-supply-result{min-height:64px}}
+
+/* Inventory photo controls: preview linked photo before removal. */
+.inventory-existing-photo{border:1px solid #c9a983;border-radius:9px;padding:12px;background:#fff9ef;display:grid;gap:10px}
+.inventory-photo-preview{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.inventory-photo-preview img{display:block;width:108px;height:108px;object-fit:contain;border:1px solid #cfb89a;border-radius:8px;background:#f9eee0;padding:4px}
+.inventory-photo-preview img[hidden]{display:none}
+.inventory-photo-preview p{margin-bottom:9px}
+.inventory-photo-preview .button{background:#f6e3dd;color:#7a2b42;border-color:#bb8f90}
