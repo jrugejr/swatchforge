@@ -24,3 +24,19 @@ CREATE TABLE IF NOT EXISTS studio_accounts (
   session_version TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+
+-- Shared circulation: one active loan per inventory record; history is retained.
+-- Worker creates this table and indexes automatically on first state request.
+CREATE TABLE IF NOT EXISTS studio_loans (
+  id TEXT PRIMARY KEY,
+  item_id TEXT NOT NULL,
+  owner TEXT NOT NULL,
+  borrower TEXT NOT NULL,
+  checked_out_at TEXT NOT NULL,
+  due_date TEXT,
+  checked_in_at TEXT,
+  checked_in_by TEXT,
+  item_snapshot TEXT NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_studio_active_loans ON studio_loans(item_id) WHERE checked_in_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_studio_loan_history ON studio_loans(checked_out_at DESC);
