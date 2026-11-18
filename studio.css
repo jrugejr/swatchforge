@@ -132,3 +132,11 @@
 .recipe-gel-option input{width:20px;height:20px;flex:0 0 20px;margin-top:3px;accent-color:#651b35}
 .recipe-gel-option span{display:grid;gap:4px}
 .recipe-gel-option small,.recipe-requirement-help{display:block;color:#745e66;font-size:.78rem;line-height:1.45;font-weight:400}
+
+/* Circulation desk and inventory lending states. */
+.loan-entry{align-items:center;flex-wrap:wrap}.loan-entry .content{min-width:180px}
+.loan-inventory-flag{color:#81405a;font-weight:750;font-size:.79rem;margin-top:3px!important}
+.loan-overdue{color:#a23045!important;font-weight:750}
+#loan-form .form-status{position:static}
+#loan-form .form-status[hidden]{display:none}
+@media(max-width:620px){.loan-entry{gap:10px}.loan-entry .button{margin-left:auto}}
