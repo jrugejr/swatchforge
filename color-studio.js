@@ -16,7 +16,7 @@ function hsv(hex){
 }
 function setup(){
  const editor=document.querySelector('#editor-content');if(!editor)return;
- const input=editor.querySelector('input[name=color][type=color]'),finish=editor.querySelector('select[name=finish]'),hidden=editor.querySelector('input[name=shiftColors]');
+ const input=editor.querySelector('input[name=color][type=color]'),finish=editor.querySelector('select[name=finish]'),hidden=editor.querySelector('input[name=shiftColors]'),mode=editor.querySelector('select[name=swatchMode]'),build=editor.querySelector('select[name=buildStrength]'),symbol=editor.querySelector('select[name=clearSymbol]');
  if(!input||!finish||!hidden||input.dataset.paletteReady)return;
  input.dataset.paletteReady='true';
  let shifts=[];try{shifts=JSON.parse(hidden.value)}catch{}
@@ -41,8 +41,31 @@ function setup(){
   dot.style.left=state.s*100+'%';dot.style.top=(1-state.v)*100+'%';hex.value=current.toUpperCase();
  }
  function show(){
-  const multi=finish.value==='Chameleon';area.hidden=!multi;
-  preview.style.background='linear-gradient(100deg,'+(multi?shifts:[color,color]).join(',')+')';
+  const multi=finish.value==='Chameleon';
+  const displayMode=mode?.value||'solid',clear=displayMode==='clear';
+  const material=window.SwatchforgeMaterial;
+  const info=material?.info({swatchMode:displayMode,buildStrength:build?.value,color,shiftColors:multi?shifts:[],clearSymbol:symbol?.value});
+  preview.classList.toggle('sf-checker',displayMode!=='solid');
+  preview.style.background=displayMode==='solid'?'linear-gradient(100deg,'+(multi?shifts:[color,color]).join(',')+')':'';
+  let layer=preview.querySelector('.sf-material-fill');
+  if(!layer){layer=document.createElement('span');layer.className='sf-material-fill';preview.appendChild(layer)}
+  layer.style.background=info?.fill||'transparent';
+  layer.hidden=displayMode==='solid';
+  let iconEl=preview.querySelector('.sf-material-symbol');
+  if(iconEl)iconEl.remove();
+  if(clear&&material){
+   const temp=document.createElement('div');
+   temp.innerHTML=material.render({swatchMode:'clear',clearSymbol:symbol?.value});
+   iconEl=temp.querySelector('.sf-material-symbol');
+   if(iconEl)preview.appendChild(iconEl);
+  }
+  const colorArea=box.querySelector('.sf-color-title');
+  for(const elem of [sv,slider.closest('label'),hex.closest('label'),colorArea])if(elem)elem.hidden=clear;
+  const buildChoice=editor.querySelector('.sf-build-choice'),clearChoice=editor.querySelector('.sf-clear-choice'),swatchColorLabel=input.closest('label');
+  if(buildChoice)buildChoice.hidden=!['jelly','milky'].includes(displayMode);
+  if(clearChoice)clearChoice.hidden=!clear;
+  if(swatchColorLabel)swatchColorLabel.hidden=clear;
+  area.hidden=!(multi&&!clear&&displayMode==='solid');
   input.value=color;
   hidden.value=JSON.stringify(multi?shifts:[]);
   count.textContent=shifts.length;
@@ -66,6 +89,10 @@ function setup(){
   controls();show();
  }
  finish.addEventListener('change',finishChange);
+ if(mode)mode.addEventListener('change',show);
+ if(build)build.addEventListener('change',show);
+ if(symbol)symbol.addEventListener('change',show);
+
  box.querySelector('[data-minus]').addEventListener('click',()=>{if(shifts.length<3)return;shifts.pop();active=Math.min(active,shifts.length-1);controls();show()});
  box.querySelector('[data-plus]').addEventListener('click',()=>{if(shifts.length>=6)return;shifts.push(presets[shifts.length]);active=shifts.length-1;controls();show()});
  slider.addEventListener('input',()=>apply(hsvhex(Number(slider.value),state.s,state.v)));
