@@ -13,19 +13,7 @@ function fileSet(input,file){const d=new DataTransfer();d.items.add(file);input.
 function stop(){if(stream){for(const t of stream.getTracks())t.stop();stream=null}const v=$('#nail-video');if(v)v.srcObject=null}
 function revoke(){if(sourceURL){URL.revokeObjectURL(sourceURL);sourceURL=''}source=null}
 function closeStudio(){stop();revoke();if(dlg()?.open)dlg().close();target=null;lastPointer=null}
-async function cameraReadyFile(file){
- if(file.size<=3.8e6&&['image/jpeg','image/png','image/webp'].includes(file.type))return file;
- const url=URL.createObjectURL(file);
- try{
-  const img=new Image();img.src=url;await img.decode();
-  const scale=Math.min(1,2000/Math.max(img.naturalWidth,img.naturalHeight));
-  const canvas=document.createElement('canvas');canvas.width=Math.round(img.naturalWidth*scale);canvas.height=Math.round(img.naturalHeight*scale);
-  canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-  const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.82));
-  if(!blob||blob.size>4e6)throw Error('Image is too large; try a smaller resolution.');
-  return new File([blob],safeName(file.name)+'.jpg',{type:'image/jpeg'});
- }finally{URL.revokeObjectURL(url)}
-}
+async function cameraReadyFile(file){return await window.SwatchforgePreparePhoto(file)}
 function wrapFileFields(){
  const editor=$('#editor-content');if(!editor)return;
  for(const input of editor.querySelectorAll('input[type="file"][accept*="image"]')){
