@@ -76,3 +76,26 @@
 
 /* Private password change screen. */
 .account-settings{max-width:760px}.account-settings h2{margin:6px 0 12px}.account-settings .formgrid{margin-top:20px}.account-settings input[type=password]{letter-spacing:.05em}.account-settings .form-status{position:static}.account-settings .form-status[hidden]{display:none}
+
+/* Cross-platform color studio: large touch targets, no tiny system color popup. */
+.sf-native-color-hidden{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.sf-palette{border:1px solid #c4a77c;background:#fcf4e8;border-radius:11px;padding:16px;display:grid;gap:12px;min-width:0}
+.sf-palette [hidden]{display:none!important}
+.sf-palette-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;color:#58263b}
+.sf-palette-head strong{font:normal 1.3rem Georgia,serif}.sf-palette-head small{color:#76616a}
+.sf-gradient-preview{height:86px;border-radius:9px;border:1px solid #c4a57d;box-shadow:inset 0 0 0 2px #fff7ed}
+.sf-shift-area{display:grid;gap:10px}
+.sf-shift-title{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+.sf-stepper{display:flex;align-items:center;gap:10px}.sf-stepper .button{width:38px;height:38px;padding:4px;font-size:1.2rem}.sf-count{font-size:1.1rem;min-width:20px;text-align:center;font-weight:800}
+.sf-shift-colors{display:flex;flex-wrap:wrap;gap:8px}.sf-shift-choice{border:1px solid #cbb098;border-radius:8px;background:#fffaf1;min-width:70px;padding:7px;display:grid;justify-items:center;gap:5px;font-size:.74rem;color:#583547;cursor:pointer}
+.sf-shift-choice.active{outline:3px solid #91506a;outline-offset:1px}
+.sf-shift-dot{width:39px;height:39px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #bca585}
+.sf-color-title{margin:0!important;font-size:.88rem}
+.sf-sv{height:160px;position:relative;border-radius:9px;cursor:crosshair;touch-action:none;background-image:linear-gradient(to top,#000,transparent),linear-gradient(to right,#fff,transparent);border:1px solid #a9927a;overflow:hidden}
+.sf-sv-target{position:absolute;width:20px;height:20px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 2px 2px #1d1529;transform:translate(-50%,-50%);pointer-events:none}
+.sf-hue-label,.sf-hex-label{font-size:.85rem;display:grid;gap:6px}
+.sf-hue{height:22px;padding:0;appearance:none;border:0;border-radius:20px;background:linear-gradient(to right,red,#ff0,lime,cyan,blue,magenta,red)}
+.sf-hue::-webkit-slider-thumb{appearance:none;width:24px;height:28px;border:3px solid #fff;border-radius:8px;background:#4e1d35;box-shadow:0 0 0 1px #50233a}
+.sf-hue::-moz-range-thumb{width:21px;height:25px;border:3px solid #fff;border-radius:8px;background:#4e1d35}
+.sf-hex{font-family:ui-monospace,Consolas,monospace;font-weight:800;letter-spacing:.08em;max-width:200px}
+@media(max-width:580px){.sf-palette{padding:12px}.sf-gradient-preview{height:105px}.sf-sv{height:215px}.sf-shift-choice{min-width:64px}}
