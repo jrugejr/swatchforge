@@ -23,6 +23,7 @@ function setup(){
  if(!Array.isArray(shifts))shifts=[];shifts=shifts.filter(valid).slice(0,6);
  let color=valid(input.value)?input.value:'#8d6679',active=-1,state=hsv(color);
  const isShiftFinish=()=>['Chameleon','Cat Eye','Magnetic'].includes(finish.value);
+ const isGradientEditing=()=>isShiftFinish()&&(mode?.value||'solid')==='solid';
 
  const box=document.createElement('section');box.className='sf-palette wide';
  box.innerHTML=[
@@ -37,13 +38,13 @@ function setup(){
  input.closest('label').insertAdjacentElement('afterend',box);input.classList.add('sf-native-color-hidden');
  const preview=box.querySelector('.sf-gradient-preview'),sv=box.querySelector('.sf-sv'),dot=box.querySelector('.sf-sv-target'),slider=box.querySelector('.sf-hue'),hex=box.querySelector('.sf-hex'),area=box.querySelector('.sf-shift-area'),chips=box.querySelector('.sf-shift-colors'),count=box.querySelector('.sf-count'),title=box.querySelector('.sf-active-label');
  function controls(){
-  const current=active>=0&&isShiftFinish()?shifts[active]:color;
+  const current=active>=0&&isGradientEditing()?shifts[active]:color;
   state=hsv(current);
   slider.value=Math.round(state.h);sv.style.backgroundColor=hsvhex(state.h,1,1);
   dot.style.left=state.s*100+'%';dot.style.top=(1-state.v)*100+'%';hex.value=current.toUpperCase();
  }
  function show(){
-  const multi=isShiftFinish();
+  const multi=isGradientEditing();
   const displayMode=mode?.value||'solid',clear=displayMode==='clear';
   const material=window.SwatchforgeMaterial;
   const info=material?.info({swatchMode:displayMode,buildStrength:build?.value,color,shiftColors:multi?shifts:[],clearSymbol:symbol?.value});
@@ -64,7 +65,7 @@ function setup(){
   area.hidden=!(multi&&!clear&&displayMode==='solid');
   area.querySelector('.sf-shift-title strong').textContent=finish.value==='Cat Eye'?'Cat Eye color shifts':'Chameleon shifts';
   input.value=color;
-  hidden.value=JSON.stringify(multi?shifts:[]);
+  hidden.value=JSON.stringify(isShiftFinish()?shifts:[]);
   count.textContent=shifts.length;
   title.textContent=multi?'Shift '+(active+1):'Swatch color';
   chips.replaceChildren();
@@ -77,16 +78,16 @@ function setup(){
  }
  function apply(next){
   if(!valid(next))return;next=next.toLowerCase();
-  if(active>=0&&isShiftFinish())shifts[active]=next;else color=next;
+  if(active>=0&&isGradientEditing())shifts[active]=next;else color=next;
   controls();show();
  }
  function finishChange(){
-  if(isShiftFinish()){if(shifts.length<2)shifts=[color,presets[1],presets[2]];active=Math.max(0,Math.min(active,shifts.length-1))}
+  if(isGradientEditing()){if(shifts.length<2)shifts=[color,presets[1],presets[2]];active=Math.max(0,Math.min(active,shifts.length-1))}
   else active=-1;
   controls();show();
  }
  finish.addEventListener('change',finishChange);
- if(mode)mode.addEventListener('change',show);
+ if(mode)mode.addEventListener('change',finishChange);
  if(build)build.addEventListener('change',show);
  if(symbol)symbol.addEventListener('change',show);
 
