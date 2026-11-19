@@ -21,7 +21,7 @@ function symbol(type){
 function render(x,cls='swatch'){
  const {mode,fill,symbol:icon}=info(x);
  const esc=s=>String(s).replace(/"/g,'&quot;');
- return '<span class="'+cls+' sf-material-swatch'+(mode!=='solid'?' sf-checker':'')+'" role="img" aria-label="'+esc(mode==='clear'?'Clear '+icon+' product':mode+' swatch')+'"><span class="sf-material-fill" style="background:'+esc(fill)+'"></span>'+(mode==='clear'?'<span class="sf-material-symbol">'+symbol(icon)+'</span>':'')+'</span>';
+ return '<span class="'+cls+' sf-material-swatch'+(mode!=='solid'?' sf-checker':'')+'" role="img" aria-label="'+esc(mode==='clear'?'Clear transparent swatch':mode+' swatch')+'"><span class="sf-material-fill" style="background:'+esc(fill)+'"></span>''</span>';
 }
 window.SwatchforgeMaterial={info,render};
 })();
