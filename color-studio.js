@@ -53,17 +53,11 @@ function setup(){
   layer.hidden=displayMode==='solid';
   let iconEl=preview.querySelector('.sf-material-symbol');
   if(iconEl)iconEl.remove();
-  if(clear&&material){
-   const temp=document.createElement('div');
-   temp.innerHTML=material.render({swatchMode:'clear',clearSymbol:symbol?.value});
-   iconEl=temp.querySelector('.sf-material-symbol');
-   if(iconEl)preview.appendChild(iconEl);
-  }
   const colorArea=box.querySelector('.sf-color-title');
   for(const elem of [sv,slider.closest('label'),hex.closest('label'),colorArea])if(elem)elem.hidden=clear;
   const buildChoice=editor.querySelector('.sf-build-choice'),clearChoice=editor.querySelector('.sf-clear-choice'),swatchColorLabel=input.closest('label');
   if(buildChoice)buildChoice.hidden=!['jelly','milky'].includes(displayMode);
-  if(clearChoice)clearChoice.hidden=!clear;
+  if(clearChoice)clearChoice.hidden=true;
   if(swatchColorLabel)swatchColorLabel.hidden=clear;
   area.hidden=!(multi&&!clear&&displayMode==='solid');
   input.value=color;
