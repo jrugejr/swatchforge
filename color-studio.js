@@ -22,6 +22,8 @@ function setup(){
  let shifts=[];try{shifts=JSON.parse(hidden.value)}catch{}
  if(!Array.isArray(shifts))shifts=[];shifts=shifts.filter(valid).slice(0,6);
  let color=valid(input.value)?input.value:'#8d6679',active=-1,state=hsv(color);
+ const isShiftFinish=()=>['Chameleon','Cat Eye','Magnetic'].includes(finish.value);
+
  const box=document.createElement('section');box.className='sf-palette wide';
  box.innerHTML=[
  '<div class="sf-palette-head"><strong>Color Studio</strong><small>Easy-to-use color controls</small></div>',
@@ -35,13 +37,13 @@ function setup(){
  input.closest('label').insertAdjacentElement('afterend',box);input.classList.add('sf-native-color-hidden');
  const preview=box.querySelector('.sf-gradient-preview'),sv=box.querySelector('.sf-sv'),dot=box.querySelector('.sf-sv-target'),slider=box.querySelector('.sf-hue'),hex=box.querySelector('.sf-hex'),area=box.querySelector('.sf-shift-area'),chips=box.querySelector('.sf-shift-colors'),count=box.querySelector('.sf-count'),title=box.querySelector('.sf-active-label');
  function controls(){
-  const current=active>=0&&finish.value==='Chameleon'?shifts[active]:color;
+  const current=active>=0&&isShiftFinish()?shifts[active]:color;
   state=hsv(current);
   slider.value=Math.round(state.h);sv.style.backgroundColor=hsvhex(state.h,1,1);
   dot.style.left=state.s*100+'%';dot.style.top=(1-state.v)*100+'%';hex.value=current.toUpperCase();
  }
  function show(){
-  const multi=finish.value==='Chameleon';
+  const multi=isShiftFinish();
   const displayMode=mode?.value||'solid',clear=displayMode==='clear';
   const material=window.SwatchforgeMaterial;
   const info=material?.info({swatchMode:displayMode,buildStrength:build?.value,color,shiftColors:multi?shifts:[],clearSymbol:symbol?.value});
@@ -60,12 +62,13 @@ function setup(){
   if(clearChoice)clearChoice.hidden=true;
   if(swatchColorLabel)swatchColorLabel.hidden=clear;
   area.hidden=!(multi&&!clear&&displayMode==='solid');
+  area.querySelector('.sf-shift-title strong').textContent=finish.value==='Cat Eye'?'Cat Eye color shifts':'Chameleon shifts';
   input.value=color;
   hidden.value=JSON.stringify(multi?shifts:[]);
   count.textContent=shifts.length;
   title.textContent=multi?'Shift '+(active+1):'Swatch color';
   chips.replaceChildren();
-  if(multi)shifts.forEach((c,i)=>{
+  if(multi&&displayMode==='solid')shifts.forEach((c,i)=>{
    const b=document.createElement('button');b.type='button';b.className='sf-shift-choice'+(i===active?' active':'');b.setAttribute('aria-label','Edit color shift '+(i+1));
    const sw=document.createElement('span');sw.className='sf-shift-dot';sw.style.background=c;
    const tx=document.createElement('span');tx.textContent='Shift '+(i+1);b.append(sw,tx);
@@ -74,11 +77,11 @@ function setup(){
  }
  function apply(next){
   if(!valid(next))return;next=next.toLowerCase();
-  if(active>=0&&finish.value==='Chameleon')shifts[active]=next;else color=next;
+  if(active>=0&&isShiftFinish())shifts[active]=next;else color=next;
   controls();show();
  }
  function finishChange(){
-  if(finish.value==='Chameleon'){if(shifts.length<2)shifts=[color,presets[1],presets[2]];active=Math.max(0,Math.min(active,shifts.length-1))}
+  if(isShiftFinish()){if(shifts.length<2)shifts=[color,presets[1],presets[2]];active=Math.max(0,Math.min(active,shifts.length-1))}
   else active=-1;
   controls();show();
  }
